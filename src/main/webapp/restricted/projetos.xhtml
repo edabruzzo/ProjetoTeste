@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html" 
+      xmlns:f="http://xmlns.jcp.org/jsf/core" 
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    
+  
+   <h:head>
+        <title>CONTROLE DE PROJETOS</title>
+      
+     <!--   <h:outputStylesheet library="css" name="tabelas.css" /> -->
+        <link type="text/css" rel="stylesheet" href="/ControleFinanceiro/style/estilos.css" />
+        	
+    </h:head>
+    
+    
+
+   <ui:composition template="/restricted/_template.xhtml">
+          
+       
+              
+         <ui:define name="titulo">
+			<p:outputPanel> CONTROLE DE PROJETOS </p:outputPanel>
+		</ui:define>
+
+   <ui:define name="conteudo"> 
+          
+        <p:messages class="mensagens-erro"/> 
+    
+          
+          <h:form>
+            <p:fieldset legend="CADASTRO DE PROJETO">
+         <h:panelGrid columns="2">
+          <p:outputLabel value="NOME DO PROJETO:" for="nome" />
+          <p:inputText id="nome" value="#{projetoBean.projeto.nome}" required="true"
+                             requiredMessage="Nome do projeto é obrigatório!!!"
+                             validatorMessage="Nome não pode ser superior a 40">
+                    <f:validateLength maximum="40" />
+            </p:inputText>
+                                              
+             <p:outputLabel value="STATUS DO PROJETO:" for="status" />
+             <p:inputText id="status" value="#{projetoBean.projeto.status}" required="true" 
+                 requiredMessage="Status do projeto é obrigatório!!!">
+             </p:inputText> 
+              <p:outputLabel value="PRIORIDADE DO PROJETO:" for="status" />
+             <p:inputText id="prioridade" value="#{projetoBean.projeto.prioridade}" required="true" 
+                 requiredMessage="Prioridade do projeto é obrigatória!!!">
+             </p:inputText> 
+             <h:commandButton id="criarNovoProjeto" value="ADICIONAR" action="#{projetoBean.criarNovoProjeto()}">
+             </h:commandButton>
+                </h:panelGrid>
+            </p:fieldset>
+              
+        </h:form>
+ 
+ 
+        
+        
+ <f:view>
+ <h:form >
+         <h1><h:outputText value="PROJETOS CADASTRADOS"/></h1>
+         <p:dataTable id="tabelaProjetos" value="#{projetoBean.listaProjetos()}" var="item">
+              <f:facet name="header">PROJETOS CADASTRADOS</f:facet>
+             <p:column headerText="ID">
+                 <h:outputText value="#{item.id_projeto}"/>
+             </p:column>
+              <p:column headerText="NOME">
+                 <h:outputText value="#{item.nome}"/>
+             </p:column>
+              <p:column headerText="STATUS">
+                 <h:outputText value="#{item.status}"/>
+             </p:column>
+              <p:column headerText="PRIORIDADE" >
+                 <h:outputText value="#{item.prioridade}"/>
+             </p:column>
+         </p:dataTable>
+     </h:form>
+ </f:view>
+
+
+ 
+ 
+   </ui:define>
+   
+   </ui:composition>
+
+</html>
