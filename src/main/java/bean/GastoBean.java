@@ -35,39 +35,18 @@ import org.primefaces.event.data.FilterEvent;
 public class GastoBean {
     
     private Gasto gasto = new Gasto();
+    private Gasto gastoEditado = new Gasto();
     private Local local = new Local();
     private Usuario usuario = new Usuario();
     private int projetoID;
     private int localID;
-    //este é o usuário logado
-   
-    private boolean canEdit = false;
-    private int pesquisaByMes;
-    private int pesquisaByAno;
+    private int IDUsuarioPesquisado;
     private List<Gasto> listaGastosFiltrados;
-
-  
-    private boolean mostrarTabelaPesquisas = false;
     private boolean houveErro = false;
-    private Integer IDUsuarioPesquisado;
-    private Gasto gastoEditado = new Gasto();
-    private String consultaSQL;
-    private boolean permiteConsultaSQL = false;
     private List<Gasto> listaGastosTotais;
     private double gastosFiltrados;
     private double gastosTotais;
-   private List<Gasto> listaGastosPesquisa;
-   private boolean mostraTotal = false;
-
-    public boolean isMostraTotal() {
-        return mostraTotal;
-    }
-
-    public void setMostraTotal(boolean mostraTotal) {
-        this.mostraTotal = mostraTotal;
-    }
-
-    
+   
     
       public List<Gasto> getListaGastosFiltrados() {
         return listaGastosFiltrados;
@@ -80,7 +59,19 @@ public class GastoBean {
 
     public List<Gasto> getListaGastosTotais() {
           GastoJpaController gastoDAO = new GastoJpaController();
-        this.listaGastosTotais = gastoDAO.listaGastosByConsultaSQL();
+          LoginFilter lf = new LoginFilter();
+          
+          if (lf.verificaPrivilegio()) {
+
+        	  this.listaGastosTotais = gastoDAO.listaGastosByConsultaSQL();
+        	  
+        	  
+          }else {
+        	  
+        	  
+        	  this.listaGastosTotais = gastoDAO.listaGastosByUsuarioLogado(lf.getUsuario().getIdUsuario());
+          }
+       
         return listaGastosTotais;
         
     }
@@ -99,56 +90,6 @@ public class GastoBean {
     }
     
 
-    public boolean isPermiteConsultaSQL() {
-        return permiteConsultaSQL;
-    }
-
-    public void setPermiteConsultaSQL(boolean permiteConsultaSQL) {
-        this.permiteConsultaSQL = permiteConsultaSQL;
-    }
-
-    public String getConsultaSQL() {
-        return consultaSQL;
-    }
-
-    public void setConsultaSQL(String consultaSQL) {
-        this.consultaSQL = consultaSQL;
-    }
-
-    public Integer getIDUsuarioPesquisado() {
-        return IDUsuarioPesquisado;
-    }
-
-    public void setIDUsuarioPesquisado(Integer IDUsuarioPesquisado) {
-        this.IDUsuarioPesquisado = IDUsuarioPesquisado;
-    }
-
-   
-
-    public boolean isHouveErro() {
-        return houveErro;
-    }
-
-    public void setHouveErro(boolean houveErro) {
-        this.houveErro = houveErro;
-    }
-
-    public boolean isMostrarTabelaPesquisas() {
-        return mostrarTabelaPesquisas;
-    }
-
-    public void setMostrarTabelaPesquisas(boolean mostrarTabelaPesquisas) {
-        this.mostrarTabelaPesquisas = mostrarTabelaPesquisas;
-    }
-
-    public List<Gasto> getListaGastosPesquisa() {
-        return listaGastosPesquisa;
-    }
-
-    public void setListaGastosPesquisa(List<Gasto> listaGastosPesquisa) {
-        this.listaGastosPesquisa = listaGastosPesquisa;
-    }
-    
     
 
     public int getProjetoID() {
@@ -159,31 +100,6 @@ public class GastoBean {
         this.projetoID = projetoID;
     }
 
-    public int getPesquisaByMes() {
-        return pesquisaByMes;
-    }
-
-    public void setPesquisaByMes(int pesquisaByMes) {
-        this.pesquisaByMes = pesquisaByMes;
-    }
-
-    public int getPesquisaByAno() {
-        return pesquisaByAno;
-    }
-
-    public void setPesquisaByAno(int pesquisaByAno) {
-        this.pesquisaByAno = pesquisaByAno;
-    }
-  
-    
-
-    public boolean isCanEdit() {
-        return canEdit;
-    }
-
-    public void setCanEdit(boolean canEdit) {
-        this.canEdit = canEdit;
-    }
 
 
     public Usuario getUsuario() {
@@ -235,195 +151,51 @@ public class GastoBean {
         this.gasto = gasto;
     }
     
-      public Gasto getGastoEditado() {
-        return gastoEditado;
-    }
-
-    public void setGastoEditado(Gasto gastoEditado) {
-        this.gastoEditado = gastoEditado;
-    }
-
     /**
      * Creates a new instance of GastoBean
      */
     public GastoBean() {
     }
     
-    public void limparTabelaView(){
-        this.mostrarTabelaPesquisas = false;
-        this.listaGastosPesquisa = null;
-        this.gastosTotais = 0;
-       
-    }
     
     public void mostraMensagemErro(String message){
         
-    this.houveErro = true;
+    this.setHouveErro(true);
     FacesMessage fm = new FacesMessage( message);
-    FacesContext.getCurrentInstance().addMessage("tabelaGastosPesquisados", fm);
+    FacesContext.getCurrentInstance().addMessage("tabelaGastos", fm);
     
     
     }
     
     
-    public List<Gasto> listaGastosPesquisados(){
-        
-        if(this.listaGastosPesquisa == null){
-            this.setMostrarTabelaPesquisas(false);
-        }
-        
-        return this.listaGastosPesquisa;
-        
-    }
     
-
-
-       public void verificaPermissaoPesquissaGastosSQL(){
-           LoginFilter lf = new LoginFilter();
-
-          if(lf.verificaPrivilegio()){
-
-              this.permiteConsultaSQL = true;
-
-          }
-       }
-       
-       
-       public void verificaGastosSQL(){
-           
-           GastoJpaController gastoDAO = new GastoJpaController();
-           LoginFilter lf = new LoginFilter();
-           if(lf.verificaPrivilegioSuperAdmin()){
-           this.listaGastosPesquisa = gastoDAO.listaGastosByConsultaSQL();
-           this.gastosTotais = gastoDAO.calculaGastosBySQL(this.consultaSQL);
-           this.mostrarTabelaPesquisas = true;
-           this.permiteConsultaSQL = false;
-           }
-           
-       }
-
+  
     
-    public void verificaGastosMes() {
-        
-       LoginFilter lf = new LoginFilter();
-       Usuario usuarioLogado = new Usuario();
-       usuarioLogado = lf.getUsuario();
-       GastoJpaController gastoDAO = new GastoJpaController();
-        
-       if(usuarioLogado.getPapel().isPrivAdmin()){
-            
-        this.gastosTotais = gastoDAO.calculaGastosMensais(this.pesquisaByMes, this.pesquisaByAno);
-        this.listaGastosPesquisa = gastoDAO.listaGastosByMes(this.pesquisaByMes, this.pesquisaByAno);
-        
-       }else{
-           
-           this.gastosTotais = gastoDAO.calculaGastosMensaisUsuarioLogado(this.pesquisaByMes, this.pesquisaByAno, usuarioLogado.getIdUsuario());
-           this.listaGastosPesquisa = gastoDAO.listaGastosByMesUsuarioLogado(this.pesquisaByMes, this.pesquisaByAno, usuarioLogado.getIdUsuario());
-       }
-       
-       if(!houveErro){
-     
-           this.mostrarTabelaPesquisas = true;
-
-       }
-       
-             
-    }
-    
-    
-      public void verificaGastosLocal(){
-        
-       LoginFilter lf = new LoginFilter();
-       Usuario usuarioLogado = new Usuario();
-       usuarioLogado = lf.getUsuario();
-        GastoJpaController gastoDAO = new GastoJpaController();
-        
-        if(usuarioLogado.getPapel().isPrivAdmin()){
-            
-        this.gastosTotais = gastoDAO.calculaGastosByLocal(this.localID);        
-        this.listaGastosPesquisa = gastoDAO.listaGastosByLocal(this.localID);
-        
-        }else {
-            this.gastosTotais = gastoDAO.calculaGastosByLocalUsuarioLogado(localID, usuarioLogado.getIdUsuario());
-            this.listaGastosPesquisa = gastoDAO.listaGastosByLocalUsuarioLogado(this.localID, usuarioLogado.getIdUsuario());
-        }
-        
-        if (!houveErro){
-             this.mostrarTabelaPesquisas = true;
-        }
-       
-       
-    }
-      
-      
-       public void verificaGastosUsuario(){
-           
-       LoginFilter lf = new LoginFilter();
-       Usuario usuarioLogado = new Usuario();
-       usuarioLogado = lf.getUsuario();
-       GastoJpaController gastoDAO = new GastoJpaController();
-        
-        if(usuarioLogado.getPapel().isPrivAdmin()){
-            
-           this.gastosTotais = gastoDAO.calculaGastosByUsuario(this.IDUsuarioPesquisado);
-           this.listaGastosPesquisa = gastoDAO.listaGastosByUsuario(this.IDUsuarioPesquisado);
-          
-       }else {
-            this.gastosTotais = gastoDAO.calculaGastosByUsuario(usuarioLogado.getIdUsuario());
-            this.listaGastosPesquisa = gastoDAO.listaGastosByUsuarioLogado(usuarioLogado.getIdUsuario());
-        }
-        
-        this.mostrarTabelaPesquisas = true;
-        
-        
-       }
-      
-      
-        public void verificaGastosProjeto(){
-        
-        LoginFilter lf = new LoginFilter();
-        Usuario usuarioLogado = new Usuario();
-        usuarioLogado = lf.getUsuario();
-        GastoJpaController gastoDAO = new GastoJpaController();
-        
-        if(usuarioLogado.getPapel().isPrivAdmin()){
-            
-           this.gastosTotais = gastoDAO.calculaGastosByProjeto(this.projetoID);
-           this.listaGastosPesquisa = gastoDAO.listaGastosByProjeto(this.projetoID);
-            
-        }else {
-        this.gastosTotais = gastoDAO.calculaGastosByProjetoUsuarioLogado(this.projetoID, usuarioLogado.getIdUsuario());
-        this.listaGastosPesquisa = gastoDAO.listaGastosByProjetoUsuarioLogado(this.projetoID, usuarioLogado.getIdUsuario());
-        }
-        
-        if(!houveErro){
-            this.mostrarTabelaPesquisas = true;
-        }
-       
-    }
-    
-    
-    
-    public void adicionarGasto(){
+    public void adicionarGasto() throws NonexistentEntityException, Exception{
     
         GastoJpaController gastoDAO = new GastoJpaController();
         boolean gravado = false;
+        
+        if (gastoDAO.findGasto(gasto.getId_gasto()) == null) {
+      	
+        	if(this.gasto.getLocal()==null & gasto.getUsuario()==null){
+          	
+          	String mensagem1 = null;
+               mensagem1 = "HOUVE UM PROBLEMA E O GASTO NÃO FOI GRAVADO POIS "
+                       + "O LOCAL E/OU USUÁRIO ESTÃO NULOS";
+              FacesMessage fm = new FacesMessage(mensagem1);
+               FacesContext.getCurrentInstance().addMessage("gravaGasto", fm);
           
-         
-          gasto.setLocal(local);
-         
-     
-        if(gasto.getLocal()==null & gasto.getUsuario()==null){
-            String mensagem1 = null;
-             mensagem1 = "HOUVE UM PROBLEMA E O GASTO NÃO FOI GRAVADO POIS "
-                     + "O LOCAL E/OU USUÁRIO ESTÃO NULOS";
-            FacesMessage fm = new FacesMessage(mensagem1);
-             FacesContext.getCurrentInstance().addMessage("gravaGasto", fm);
-        }else{
-         gravado =  gastoDAO.create(gasto);
-         this.listaGastosTotais = gastoDAO.listaGastosByConsultaSQL();
+        	gravado =  gastoDAO.create(this.gasto);
+      	  
+        }else if(gastoDAO.findGasto(this.gasto.getId_gasto()) != null) {
+        	
+        	gastoDAO.edit(this.gasto);
+        	
         }
-         String mensagem = null;
+
+        
+        String mensagem = null;
            
                
         if  (!gravado){
@@ -435,16 +207,16 @@ public class GastoBean {
             mensagem = "O GASTO FOI GRAVADO COM SUCESSO";
             FacesMessage fm = new FacesMessage(mensagem);
             FacesContext.getCurrentInstance().addMessage("gravaGasto", fm);
-               }
-        
-       //this.gasto = new Gasto();
+              }
+        this.listaGastosTotais = getListaGastosTotais();            
+        this.gasto = new Gasto();
         }
+    }
+        
     
         public void gravaLocal(){
             
-             LocalJpaController localDAO = new LocalJpaController();
-            
-            
+       LocalJpaController localDAO = new LocalJpaController();
         this.local = localDAO.findLocal(localID);
         this.gasto.setLocal(local);
                     
@@ -480,19 +252,21 @@ public class GastoBean {
              public void gravaUsuario(){
             
             UsuarioJpaController usuarioDAO = new UsuarioJpaController();
-            
-            this.usuario = usuarioDAO.findUsuario(IDUsuarioPesquisado);
+            this.usuario = usuarioDAO.findUsuario(getIDUsuarioPesquisado());
             gasto.setUsuario(usuario);
         }
              
+
+             
+             
              public void editaGasto() throws Exception{
-                 LoginFilter lf = new LoginFilter();
+                 
+            	 LoginFilter lf = new LoginFilter();
                  boolean possuiPrivilegio = lf.verificaPrivilegio();
                  
                  if(possuiPrivilegio){
-                 this.canEdit = true;
+ 
                  }else {
-            
             
             FacesMessage fm = new FacesMessage("DESCULPE, MAS VOCÊ NÃO TEM PRIVILÉGIO DE ADMINISTRADOR PARA EXECUTAR ESTA AÇÃO!");
             FacesContext.getCurrentInstance().addMessage("editaGasto", fm);
@@ -532,17 +306,13 @@ public class GastoBean {
                 this.gastoEditado = gasto; 
                  */
                 
-                
-                
                 LoginFilter lf = new LoginFilter();
                  boolean possuiPrivilegio = lf.verificaPrivilegio();
                  
-                 if(possuiPrivilegio & this.gastoEditado != null){
-                 GastoJpaController gastoDAO = new GastoJpaController();
-                 gastoDAO.edit(this.gastoEditado);
-                 this.canEdit = false;
-                 this.listaGastosTotais = gastoDAO.listaGastosByConsultaSQL();
-            
+                 if(possuiPrivilegio & this.getGastoEditado() != null){
+                this.gasto = this.gastoEditado;
+                adicionarGasto();
+                this.listaGastosTotais = getListaGastosTotais();            
                }
                 
                 
@@ -558,34 +328,19 @@ public class GastoBean {
                  
                  GastoJpaController gastoDAO = new GastoJpaController();
                  gastoDAO.destroy(this.gasto.getId_gasto());
-                 this.mostrarTabelaPesquisas = false;
-                 this.listaGastosPesquisa = null;
                  this.gastosTotais = 0;
     
                  }
                  
              }
         
-        public String verificaGastosTotais(){
-            
-            GastoJpaController gastoDAO = new GastoJpaController();
-            LoginFilter lf = new LoginFilter();
-            boolean isAdministrador = lf.verificaPrivilegio();
-            Usuario usuarioLogado = lf.getUsuario();
-           
-            if(isAdministrador){
-            this.listaGastosPesquisa = gastoDAO.findGastoEntities(); 
-            this.gastosTotais = gastoDAO.calculaGastosTotais();
-            }else{
-                this.listaGastosPesquisa = gastoDAO.listaGastosByUsuarioLogado(usuarioLogado.getIdUsuario()); 
-                this.gastosTotais  = gastoDAO.calculaGastosTotaisUsuarioLogado(usuarioLogado.getIdUsuario());
-            }
-                if(!houveErro){
-                    this.mostrarTabelaPesquisas = true;
-                }
-            return "/restricted/gastos?faces-redirect=true" ;
-        }
         
+             
+             
+             
+             
+             
+             
          // http://respostas.guj.com.br/9399-primefaces-datatable-listener-para-calculo-apos-filtro
         //        https://groups.google.com/forum/#!topic/javasf/24reJNQo-eQ  
 
@@ -647,7 +402,6 @@ public class GastoBean {
 
     public void calculaGastos(){
          
-        this.mostraTotal = true;
          
         if (this.listaGastosFiltrados != null){
            
@@ -664,7 +418,30 @@ public class GastoBean {
         
 
        }
-       
-    
 
+	public boolean isHouveErro() {
+		return houveErro;
+	}
+
+	public void setHouveErro(boolean houveErro) {
+		this.houveErro = houveErro;
+	}
+
+	public Gasto getGastoEditado() {
+		return gastoEditado;
+	}
+
+	public void setGastoEditado(Gasto gastoEditado) {
+		this.gastoEditado = gastoEditado;
+	}
+
+	public int getIDUsuarioPesquisado() {
+		return IDUsuarioPesquisado;
+	}
+
+	public void setIDUsuarioPesquisado(int iDUsuarioPesquisado) {
+		IDUsuarioPesquisado = iDUsuarioPesquisado;
+	}
+       
+  
 }

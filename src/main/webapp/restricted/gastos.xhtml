@@ -22,12 +22,98 @@ and open the template in the editor.
 		</ui:define>
 
    <ui:define name="conteudo"> 
+
+
+             <p:messages class ="mensagens-erro" />    
+       
+             
+             <h:form id="adicionaGasto" >
+                 <p:fieldset >
+                     <h:panelGrid >
+                <h1>ADICIONAR GASTO</h1>
+          <h:outputLabel value=" Tipo" for="tipo" />
+          <h:inputText id="tipo" value="#{gastoBean.gasto.tipoGasto}" required="true"
+                             requiredMessage="Tipo de gasto obrigatório!!!"
+                             validatorMessage="Gasto não pode ser superior a 40">
+                    <f:validateLength maximum="40" />
+            </h:inputText>
+           
+          <h:outputLabel value="Modalidade de Pagamento:" for="modalidade" />
+           <h:inputText id="modalidade" value="#{gastoBean.gasto.modalidadePagamento}" required="true"
+                             requiredMessage="Modalidade Pagamento obrigatória!!!"
+                             validatorMessage="Modalidade de pagamento não pode ser superior a 20">
+                    <f:validateLength maximum="20" />
+            </h:inputText>
+                                              
+             <h:outputLabel value="Valor gasto:" for="valor" />
+             <h:inputText id="valor" value="#{gastoBean.gasto.valorGasto}" >
+               <!--
+               NÃO QUERO VALOR MÍNIMO PARA O VALOR DO GASTO, POIS QUERO COLOCAR VALOR NEGATIVO 
+               
+               <f:validateDoubleRange minimum="1.00" />
+                -->
+             </h:inputText> 
+               <h:outputLabel value="Data do gasto" for="dataGasto" />
+               <h:inputText id="dataGasto" value="#{gastoBean.gasto.dataGasto}" >
+               <f:convertDateTime pattern="dd/MM/yyyy" />
+               <!--<f:passThroughAttribute name="type" value="date"/>-->
+               </h:inputText>
+        
+              </h:panelGrid>
+
+          
+              <h:panelGrid >
+          
+               
+            <h3>GRAVAR LOCAL NO GASTO</h3>
+
+            <h:outputLabel value="SELECIONE LOCAL DO GASTO" for="gravaLocal_" />
+            <h:selectOneMenu id="gravaLocal_" value="#{gastoBean.localID}"  >
+                <f:selectItems  value="#{gastoBean.selecionaLocais()}" var="local"
+                                itemLabel="#{local.nome}" itemValue="#{local.id_local}" />
+               
+            </h:selectOneMenu>
+                
+            <h:commandButton id="gravaLocal" value="GRAVA LOCAL"  action="#{gastoBean.gravaLocal()}"> 
+               </h:commandButton>
+            <h:outputText id="mostraProjetoLocal"  value="#{gastoBean.gasto.local.projeto.nome}"/>
+ 
+            </h:panelGrid>
+                 
+          <h:panelGrid >
+            <h3>GRAVAR USUÁRIO NO GASTO</h3>
+         
+            <h:outputLabel value="SELECIONE USUÁRIO QUE REALIZOU O GASTO" for="usuario_" />
+            <h:selectOneMenu id="usuario_" value="#{gastoBean.IDUsuarioPesquisado}"  >
+                <f:selectItems  value="#{gastoBean.selecionaUsuarios()}" var="usuario1"
+                                itemLabel="#{usuario1.nome}" itemValue="#{usuario1.idUsuario}" />
+               
+            </h:selectOneMenu>
+                
+            <h:commandButton id="gravaUsuario" value="GRAVA USUÁRIO NO GASTO" 
+                             action="#{gastoBean.gravaUsuario()}" > 
+                   
+        </h:commandButton>
+         
+          </h:panelGrid>
+                          <h:panelGrid >
+                        <p:commandButton id="adicionarGasto" value="GRAVAR GASTO" 
+                                         action="#{gastoBean.adicionarGasto()}"
+                                         process="@form, @this" update=":formGastos:tabelaGastos">
+                        </p:commandButton>
+                
+                    </h:panelGrid>
+                </p:fieldset>  
+        </h:form>
+
+
           
        <f:view>
              <p:messages class="mensagens-erro"/> 
              <fieldset>
             <legend>TOTALIZADOR</legend>
          <h:form id="formTotalizador">
+
               <!--implementar um campo com a totalização dinâmica à medida que os filtros forem 
             sendo aplicados 
           
@@ -83,29 +169,16 @@ and open the template in the editor.
                 <p:column headerText="TIPO DE GASTO" sortBy="#{item.tipoGasto}"
                       filterBy="#{item.tipoGasto}" filterMatchMode="contains" >
                                   
-                    <p:inputText value="#{item.tipoGasto}" rendered="#{gastoBean.canEdit}" />
-                    <h:outputText value="#{item.tipoGasto}" rendered="#{not gastoBean.canEdit}"/>
+                    <h:outputText value="#{item.tipoGasto}" />
                 </p:column>
                 <p:column headerText="MODALIDADE DE PAGAMENTO" sortBy="#{item.modalidadePagamento}"
                           filterBy="#{item.modalidadePagamento}" filterMatchMode="startsWith" >    
                           
-                          <p:inputText value="#{item.modalidadePagamento}" rendered="#{gastoBean.canEdit}" />
-                          <h:outputText value="#{item.modalidadePagamento}" rendered="#{not gastoBean.canEdit}"/>
+                          <h:outputText value="#{item.modalidadePagamento}" />
                 </p:column>
                 <p:column headerText="LOCAL DO GASTO" sortBy="#{item.local.nome}"
                           filterBy="#{item.local.nome}" filterMatchMode="contains" >
-                    <h:selectOneMenu id="editaLocal" value="#{gastoBean.localID}"  
-                                     rendered="#{gastoBean.canEdit}">
-                <f:selectItems  value="#{gastoBean.selecionaLocais()}" var="local"
-                                itemLabel="#{local.nome}" itemValue="#{local.id_local}" />
-               
-            </h:selectOneMenu>
-                
-                    <p:commandButton  value="GRAVA NOVO LOCAL"  
-                    action="#{gastoBean.gravaLocal()}" rendered="#{gastoBean.canEdit}">
-                 
-                    </p:commandButton>
-                    <h:outputText value="#{item.local.nome}" rendered="#{not gastoBean.canEdit}"/>
+                    <h:outputText value="#{item.local.nome}" />
                 </p:column>
                 <p:column headerText="PROJETO" sortBy="#{item.local.projeto.nome}"
                           filterBy="#{item.local.projeto.nome}" filterMatchMode="contains" >
@@ -113,40 +186,24 @@ and open the template in the editor.
                 </p:column>
                 <p:column headerText="USUÁRIO" sortBy="#{item.usuario.nome}"
                           filterBy="#{item.usuario.nome}" filterMatchMode="startsWith" >
-                   <h:selectOneMenu id="editaUsuario" value="#{gastoBean.IDUsuarioPesquisado}" 
-                                    rendered="#{gastoBean.canEdit}" >
-                <f:selectItems  value="#{gastoBean.selecionaUsuarios()}" var="usuario"
-                                itemLabel="#{usuario.nome}" itemValue="#{usuario.idUsuario}" />
-               
-            </h:selectOneMenu>
-                
-            <p:commandButton value="GRAVA USUÁRIO NO GASTO" 
-             action="#{gastoBean.gravaUsuario()}" rendered="#{gastoBean.canEdit}">
-                  
-        </p:commandButton>
-                    <h:outputText value="#{item.usuario.nome}" rendered="#{not gastoBean.canEdit}"/>
-                </p:column>
+               <h:outputText value="#{item.usuario.nome}"/>
+               </p:column>
                 <p:column headerText="DATA DO GASTO" sortBy="#{item.id_gasto}"
                           filterBy="#{item.dataGasto}" filterMatchMode="contains" >
-                    <p:inputText value="#{item.dataGasto}" rendered="#{gastoBean.canEdit}" >
-                    <f:convertDateTime pattern="dd/MM/yyyy" />
-                    
-                    </p:inputText>
-                    <h:outputText value="#{item.dataGasto}" rendered="#{not gastoBean.canEdit}">
+                    <h:outputText value="#{item.dataGasto}" >
                       <f:convertDateTime pattern="dd/MM/yyyy" /> 
                     </h:outputText>
                 </p:column>
                 <p:column headerText="VALOR DO GASTO" sortBy="#{item.id_gasto}"
                           filterBy="#{item.valorGasto}" 
                           filterFunction="#{gastoBean.valorEhMenor(valorColuna, filtroDigitado, locale)}" >
-                       <p:inputText value="#{item.valorGasto}" rendered="#{gastoBean.canEdit}" />
-                       <h:outputText value="#{item.valorGasto}" rendered="#{not gastoBean.canEdit}">
+                       <h:outputText value="#{item.valorGasto}" >
                          <f:convertNumber type="currency" pattern="R$ #0.00" 
                                             currencySymbol="R$"
                                             locale="pt_BR"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="DELETE">
+                <p:column headerText="DELETAR">
                      <p:commandButton id="deletaGasto" value="Delete"
                                       action="#{gastoBean.deletaGasto()}" icon="fa fa-fw fa-remove" 
                                       ajax="false">
@@ -155,25 +212,16 @@ and open the template in the editor.
                    
                     </p:commandButton>
                  </p:column>
-                <p:column headerText="Edit">
+                <p:column headerText="EDITAR">
                      <p:commandButton value="Editar" id="editaGasto"
                                       action="#{gastoBean.editaGasto()}"
                                       icon="fa fa-fw fa-edit" 
                                       ajax = "false">
                           <f:setPropertyActionListener
-                        target="#{gastoBean.gastoEditado}" value="#{item}" />
+                        target="#{gastoBean.gasto}" value="#{item}" />
                     </p:commandButton>
                  </p:column>
-                <p:column>
-                <p:commandButton value="SALVAR GASTO EDITADO" 
-                             action="#{gastoBean.salvarGastoEditado()}"
-                             rendered="#{gastoBean.canEdit}"
-                             icon="fa fa-fw fa-remove" ajax="false">
-                             
-          <f:setPropertyActionListener target="#{gastoBean.gastoEditado}" value="#{item}"/> 
-          
-            </p:commandButton>
-            </p:column>
+           
                 
           <!-- NÃO ESTÁ FUNCIONANDO COM AJAX - NÃO CONSIGO PEGAR PELO ID PARA 
           ATUALIZAR
@@ -200,88 +248,6 @@ and open the template in the editor.
     </f:view>
           
           
-          
-             <p:messages class ="mensagens-erro" />    
-       
-             
-             <h:form id="adicionaGasto" >
-                 <p:fieldset >
-                     <h:panelGrid >
-                <h1>ADICIONAR GASTO</h1>
-          <h:outputLabel value=" Tipo" for="tipo" />
-          <h:inputText id="tipo" value="#{gastoBean.gasto.tipoGasto}" required="true"
-                             requiredMessage="Tipo de gasto obrigatório!!!"
-                             validatorMessage="Gasto não pode ser superior a 40">
-                    <f:validateLength maximum="40" />
-            </h:inputText>
-           
-          <h:outputLabel value="Modalidade de Pagamento:" for="modalidade" />
-           <h:inputText id="modalidade" value="#{gastoBean.gasto.modalidadePagamento}" required="true"
-                             requiredMessage="Modalidade Pagamento obrigatória!!!"
-                             validatorMessage="Modalidade de pagamento não pode ser superior a 20">
-                    <f:validateLength maximum="20" />
-            </h:inputText>
-                                              
-             <h:outputLabel value="Valor gasto:" for="valor" />
-             <h:inputText id="valor" value="#{gastoBean.gasto.valorGasto}" >
-               <!--
-               NÃO QUERO VALOR MÍNIMO PARA O VALOR DO GASTO, POIS QUERO COLOCAR VALOR NEGATIVO 
-               
-               <f:validateDoubleRange minimum="1.00" />
-                -->
-             </h:inputText> 
-               <h:outputLabel value="Data do gasto" for="dataGasto" />
-               <h:inputText id="dataGasto" value="#{gastoBean.gasto.dataGasto}" >
-               <f:convertDateTime pattern="dd/MM/yyyy" />
-               <!--<f:passThroughAttribute name="type" value="date"/>-->
-               </h:inputText>
-        
-              </h:panelGrid>
-
-          
-              <h:panelGrid >
-          
-               
-            <h3>GRAVAR LOCAL NO GASTO</h3>
-
-            <h:outputLabel value="SELECIONE LOCAL DO GASTO" for="gravaLocal_" />
-            <h:selectOneMenu id="gravaLocal_" value="#{gastoBean.localID}"  >
-                <f:selectItems  value="#{gastoBean.selecionaLocais()}" var="local"
-                                itemLabel="#{local.nome}" itemValue="#{local.id_local}" />
-               
-            </h:selectOneMenu>
-                
-               <h:commandButton id="gravaLocal" value="GRAVA LOCAL"  action="#{gastoBean.gravaLocal()}"> 
-               </h:commandButton>
-            <h:outputText id="mostraProjetoLocal"  value="#{gastoBean.gasto.local.projeto.nome}"/>
- 
-            </h:panelGrid>
-                 
-          <h:panelGrid >
-            <h3>GRAVAR USUÁRIO NO GASTO</h3>
-         
-            <h:outputLabel value="SELECIONE USUÁRIO QUE REALIZOU O GASTO" for="usuario_" />
-            <h:selectOneMenu id="usuario_" value="#{gastoBean.IDUsuarioPesquisado}"  >
-                <f:selectItems  value="#{gastoBean.selecionaUsuarios()}" var="usuario1"
-                                itemLabel="#{usuario1.nome}" itemValue="#{usuario1.idUsuario}" />
-               
-            </h:selectOneMenu>
-                
-            <h:commandButton id="gravaUsuario" value="GRAVA USUÁRIO NO GASTO" 
-                             action="#{gastoBean.gravaUsuario()}" > 
-                   
-        </h:commandButton>
-         
-          </h:panelGrid>
-                          <h:panelGrid >
-                        <p:commandButton id="adicionarGasto" value="ADICIONAR" 
-                                         action="#{gastoBean.adicionarGasto()}"
-                                         process="@form, @this" update=":formGastos:tabelaGastos">
-                        </p:commandButton>
-                
-                    </h:panelGrid>
-                </p:fieldset>  
-        </h:form>
              
        </ui:define>
          
