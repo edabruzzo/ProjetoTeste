@@ -79,7 +79,7 @@ public class ChartView implements Serializable {
         series1.setLabel("CIDADANIA");
         series1.setFill(true);
         
-        
+        //candidato a ser injetado
         GastoJpaController gastoDAO = new GastoJpaController();        
         List<Gasto> listaGastos = gastoDAO.listaGastosByProjeto(1);
 
