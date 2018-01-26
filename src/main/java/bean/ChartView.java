@@ -4,6 +4,8 @@ package bean;
 
  
 import DAO.GastoJpaController;
+import modelo.Gasto;
+
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -13,16 +15,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-import modelo.Gasto;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.DateAxis;
 import org.primefaces.model.chart.LineChartSeries;
- 
-@ManagedBean
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
+
+
+@Named
 @ViewScoped
 public class ChartView implements Serializable {
  

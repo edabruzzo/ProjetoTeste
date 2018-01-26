@@ -38,7 +38,7 @@
 			    
 			  <!--  <p:growl id="messages" showDetail="true" autoUpdate="true"/>-->
 			
-                  <h:form  rendered="#{loginFilter.verificaUsuarioLogado()}">
+                  <h:form  rendered="#{loginFilter.mostra}">
                   <p:menuButton value="MENU" style="color:black">
                   <p:menuitem value="Gastos" action="/restricted/gastos?faces-redirect=true"  icon="fa fa-fw fa-pencil-square-o"/>
                   <p:menuitem value="Locais" action="#{loginFilter.redirecionaLocais()}" icon="fa fa-fw- fa-pencil-square-o"/>

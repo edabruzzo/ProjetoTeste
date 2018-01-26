@@ -111,7 +111,7 @@ https://stackoverflow.com/questions/17910574/how-to-create-servlet-3-0-web-appli
             <version>1.7.2</version>
         </dependency>
     
-    
+    <!-- 
 <dependency>
 <groupId>javax.servlet</groupId>
 <artifactId>javax.servlet-api</artifactId>
@@ -136,21 +136,28 @@ https://stackoverflow.com/questions/17910574/how-to-create-servlet-3-0-web-appli
 <version>1.2</version>
 <scope>provided</scope>
 </dependency>
-    
-    
+      
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-
-<!-- https://mvnrepository.com/artifact/org.jboss.weld.servlet/weld-servlet 
+  -->
+<!--  https://mvnrepository.com/artifact/org.jboss.weld.servlet/weld-servlet --> 
 <dependency>
     <groupId>org.jboss.weld.servlet</groupId>
     <artifactId>weld-servlet</artifactId>
-    <version>2.4.6.Final</version>
-</dependency>    -->
+    <version>2.4.5.Final</version>
+</dependency>   
+
+<!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
+<dependency>
+    <groupId>javax.mail</groupId>
+    <artifactId>javax.mail-api</artifactId>
+    <version>1.5.6</version>
+</dependency>
+
 
   </dependencies>
   

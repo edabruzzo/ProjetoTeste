@@ -9,8 +9,8 @@ import DAO.LocalJpaController;
 import DAO.ProjetoJpaController;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import modelo.Local;
 import modelo.Projeto;
 
@@ -18,7 +18,7 @@ import modelo.Projeto;
  *
  * @author Emm
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class LocalBean {
 

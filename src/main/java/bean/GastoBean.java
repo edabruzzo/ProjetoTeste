@@ -14,23 +14,21 @@ import java.util.List;
 import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
 import javax.faces.context.FacesContext;
 import modelo.Gasto;
 import modelo.Local;
 import modelo.Projeto;
 import modelo.Usuario;
 import org.primefaces.event.data.FilterEvent;
-
+import javax.enterprise.context.SessionScoped;
 
 
 /**
  *
  * @author Emm
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class GastoBean {
     

@@ -10,8 +10,8 @@ import DAO.UsuarioJpaController;
 import DAO.exceptions.NonexistentEntityException;
 import Default.CriptografiaSenha;
 import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import modelo.Papel;
 import modelo.Usuario;
 
@@ -19,7 +19,7 @@ import modelo.Usuario;
  *
  * @author Emm
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class UsuarioBean {
 

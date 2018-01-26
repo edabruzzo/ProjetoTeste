@@ -11,8 +11,8 @@ import DAO.UsuarioJpaController;
 import Default.CriptografiaSenha;
 import java.io.IOException;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.inject.Named;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -31,13 +31,14 @@ import modelo.Usuario;
  *
  * @author Emm
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class LoginFilter implements Filter {
     
 private static final long serialVersionUID = 1L;
 
 private  boolean permiteAcesso = false;
+private boolean mostra = false;
 
   private static Usuario usuario = new Usuario();
   
@@ -223,10 +224,11 @@ private  boolean permiteAcesso = false;
              */
           
              if (this.usuario.getNome() != null){
-                    return true;
+                   this.setMostra(true);
+             }else {
+            	 this.setMostra(false);
              }
-             else return false;
-            
+            return isMostra();
             }
             
                public void solicitarNovaSenha() throws Exception {
@@ -305,6 +307,20 @@ private  boolean permiteAcesso = false;
                      // TODO Auto-generated method stub
    
            }
+
+		public boolean isMostra() {
+			
+			 if (this.usuario.getNome() != null){
+                 this.mostra = true;
+           }else {
+          	 this.mostra = false;
+           }
+			return mostra;
+		}
+
+		public void setMostra(boolean mostra) {
+			this.mostra = mostra;
+		}
            
            
           
