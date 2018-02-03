@@ -92,24 +92,38 @@ private boolean mostra = false;
            String redireciona = "/security/login?faces-redirect=true";
            
          
-            //faz a criptografia da senha entrada pelo usuÃ¡rio antes de 
+            //faz a criptografia da senha entrada pelo usuário antes de 
            //gravar no banco
             
             String senhaCriptografada = criptoSenha.convertStringToMd5(this.usuario.getPassword());
+           
             this.usuario.setPassword(senhaCriptografada);
+            
             novoUsuario = usuarioDAO.findByLoginSenha(this.usuario.getLogin(), this.usuario.getPassword());
  
+          
+            try {
+            
             if(novoUsuario == null){
-                    apresentaMensagemErro("validaAcesso", "O PROCESSO DE LOGIN FALHOU ! USUÃ�RIO INEXISTENTE OU SENHA INCORRETA !");
+                    apresentaMensagemErro("formLogin", "O PROCESSO DE LOGIN FALHOU ! USUÁRIO INEXISTENTE OU SENHA INCORRETA !");
             }else{
            
-              //LANÃ‡A UMA EXCEÃ‡ÃƒO java.lang.UnsupportedOperationException
-               //params.put("usuarioLogado", novoUsuario.getNome());
-               // params.putIfAbsent("usuarioLogado", novoUsuario.getNome()); 
+              /*LANÇA UMA EXCEÇÃO java.lang.UnsupportedOperationException
+               params.put("usuarioLogado", novoUsuario.getNome());
+               params.putIfAbsent("usuarioLogado", novoUsuario.getNome()); 
+            	ESTOU OPTANDO POR RECEBER O USUÁRIO LOGADO NÃO PELO MAP DO CONTEXTO
+            	DA SEÇÃO, MAS ATRAVÉS DE UM ATRIBUTO PRIVADO ESTÁTICO, QUE DEVE DURAR 
+            	DURANTE TODA A EXECUÇÃO DA SESSÃO.*/
+            	
+            	
               this.usuario = novoUsuario;
               this.permiteAcesso = true;
                 redireciona = "/restricted/gastos?faces-redirect=true";
-            }   
+            }
+            }catch(NullPointerException npex) {
+            	
+                apresentaMensagemErro("formLogin", "O PROCESSO DE LOGIN FALHOU ! USUÁRIO INEXISTENTE OU SENHA INCORRETA !");
+            }
                 
              return redireciona;
             
@@ -118,15 +132,15 @@ private boolean mostra = false;
         
         public void apresentaMensagemErro(String idElemento, String mensagemErro){
             
-            helper.onFlash().addMessage(idElemento, mensagemErrro);
+            helper.onFlash().addMessage(idElemento, mensagemErro);
             
         }
                 
-              public void apresentaMensagemErro(String mensagemErro){
+        
+        public void apresentaMensagemErro(String mensagemErro){
             
-            FacesContext.getCurrentInstance().addMessage(null, mensagem); 
-            
-            
+            helper.onFlash().addMessage(mensagemErro); 
+           
         } 
         
         
