@@ -5,27 +5,25 @@
  */
 package DAO;
 
-import DAO.exceptions.NonexistentEntityException;
-import Default.JPAUtil;
-import bean.GastoBean;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
+import DAO.exceptions.NonexistentEntityException;
+import TransactionsAnnotations.Transacional;
+import bean.GastoBean;
+import factory.JPAFactory;
 import modelo.Gasto;
-import modelo.Usuario;
 import modelo.Local;
+import modelo.Usuario;
 
 /**
  *
@@ -33,15 +31,33 @@ import modelo.Local;
  */
 public class GastoJpaController implements Serializable {
 
-	JPAUtil jpa = new JPAUtil();
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1343218160966481708L;
+	
+	
+	
+	@Inject
+	private JPAFactory jpa;
+
+	private Usuario usuarioNew = new Usuario();
 
 	
-      
+	@Inject
+    private GastoBean gb;
+	
+	
+	
+	
+	@Transacional
     public boolean create(Gasto gasto) {
         EntityManager em = null;
-        try {
             em = this.jpa.getEntityManager();
-            em.getTransaction().begin();
+            
+          //  em.getTransaction().begin();
+
             Usuario usuario = gasto.getUsuario();
             if (usuario != null) {
                 usuario = em.getReference(usuario.getClass(), usuario.getIdUsuario());
@@ -61,24 +77,24 @@ public class GastoJpaController implements Serializable {
                 local.getGastos().add(gasto);
                 local = em.merge(local);
             }
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-               em.close();
-        
-            }
-        }
-        return true;
+            //em.getTransaction().commit();
+                 return true;
     }
-
+	
+	
+	
+	@Transacional
     public void edit(Gasto gasto) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
         	 em = this.jpa.getEntityManager();
-        	 em.getTransaction().begin();
-            Gasto persistentGasto = em.find(Gasto.class, gasto.getId_gasto());
+        	
+        	 
+        	 //em.getTransaction().begin();
+           
+        	 
+        	Gasto persistentGasto = em.find(Gasto.class, gasto.getId_gasto());
             Usuario usuarioOld = persistentGasto.getUsuario();
-            Usuario usuarioNew = gasto.getUsuario();
             Local localOld = persistentGasto.getLocal();
             Local localNew = gasto.getLocal();
             if (usuarioNew != null) {
@@ -106,7 +122,10 @@ public class GastoJpaController implements Serializable {
                 localNew.getGastos().add(gasto);
                 localNew = em.merge(localNew);
             }
-            em.getTransaction().commit();
+        
+            //em.getTransaction().commit();
+        
+        
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
@@ -116,26 +135,25 @@ public class GastoJpaController implements Serializable {
                 }
             }
             throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-         
-            }
-        }
+        } 
     }
 
-    public void destroy(int id) throws NonexistentEntityException {
-        EntityManager em = null;
-        try {
-        	 em = this.jpa.getEntityManager();
-            em.getTransaction().begin();
+    
+	@Transacional
+	public void destroy(int id) throws NonexistentEntityException {
+        
+    	    EntityManager em = null;
+
+            em = this.jpa.getEntityManager();
+        
+            //em.getTransaction().begin();
+            
             Gasto gasto;
-            try {
+            
                 gasto = em.getReference(Gasto.class, id);
                 gasto.getId_gasto();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The gasto with id " + id + " no longer exists.", enfe);
-            }
+            
+            
             Usuario usuario = gasto.getUsuario();
             if (usuario != null) {
                 usuario.getGastos().remove(gasto);
@@ -147,13 +165,9 @@ public class GastoJpaController implements Serializable {
                 local = em.merge(local);
             }
             em.remove(gasto);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-               em.close();
-      
-            }
-        }
+
+            //em.getTransaction().commit();
+            
     }
 
     public List<Gasto> findGastoEntities() {
@@ -166,50 +180,38 @@ public class GastoJpaController implements Serializable {
 
     private List<Gasto> findGastoEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em =  this.jpa.getEntityManager();
-        try {
-            CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-            CriteriaQuery<Object> criteriaQuery = criteriaBuilder.createQuery();
-            Root<Gasto> from = criteriaQuery.from(Gasto.class);
-            CriteriaQuery<Object> select1 = criteriaQuery.select(from);
-            select1.orderBy(criteriaBuilder.desc(from.get("dataGasto")));
-            Query q = em.createQuery(select1);
-            
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return (List<Gasto>) q.getResultList();
-        } finally {
-            em.close();
-         
-        }
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Object> criteriaQuery = criteriaBuilder.createQuery();
+		Root<Gasto> from = criteriaQuery.from(Gasto.class);
+		CriteriaQuery<Object> select1 = criteriaQuery.select(from);
+		select1.orderBy(criteriaBuilder.desc(from.get("dataGasto")));
+		Query q = em.createQuery(select1);
+		
+		if (!all) {
+		    q.setMaxResults(maxResults);
+		    q.setFirstResult(firstResult);
+		}
+		return (List<Gasto>) q.getResultList();
     }
     
     
     public Gasto findGasto(int id) {
         EntityManager em = null;
         em = this.jpa.getEntityManager();
-        try{
             return em.find(Gasto.class, id);
-        }finally {
-           em.close();
         
-        }
     }
 
     public int getGastoCount() {
         EntityManager em = null;
         em = this.jpa.getEntityManager();
-        try {
-            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+        
+        CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<Gasto> rt = cq.from(Gasto.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-         
-        }
+        
     }
     
               
@@ -229,7 +231,6 @@ public class GastoJpaController implements Serializable {
          // }
            
           }
-           em.close();
              
            return listaGasto;
        }
@@ -237,21 +238,13 @@ public class GastoJpaController implements Serializable {
        
          
         public List<Gasto> listaGastosByUsuarioLogado(Integer idUsuario){
+        
         EntityManager em = jpa.getEntityManager();
-           String sqlString = "SELECT g.* FROM tb_gasto g "
+         String sqlString = "SELECT g.* FROM tb_gasto g "
               + " WHERE g.USUARIO_IDUSUARIO = "+idUsuario+" ORDER BY DATAGASTO DESC;";
           Query q = em.createNativeQuery(sqlString, Gasto.class);
-          try{
-           return (List<Gasto>) q.getResultList();
-         // }catch(NullPointerException npex){
-           //   apresentaMensagem();
-         // }
-           
-          }finally{
-           em.close();
-              
-          } 
-           
+        
+          return (List<Gasto>) q.getResultList(); 
        }
         
         
@@ -263,13 +256,7 @@ public class GastoJpaController implements Serializable {
          + "INNER JOIN tb_projeto p ON pl.Projeto_ID_PROJETO = p.ID_PROJETO "        
             + " WHERE p.ID_PROJETO = "+projetoID+";";                   
         Query q = em.createNativeQuery(sqlString, Gasto.class);
-        try{
          return (List<Gasto>) q.getResultList();
-          }finally{
-         em.close();
-        }
-  
-         
       }        	
         	
         	
@@ -291,7 +278,6 @@ public class GastoJpaController implements Serializable {
           apresentaMensagem();
         }
           
-        em.close();
            
         return resultado;
     }
@@ -301,7 +287,7 @@ public class GastoJpaController implements Serializable {
 
         
         public void apresentaMensagem(String mensagemErro){
-              GastoBean gb = new GastoBean();
+
               String mensagem = "NÃO FOI POSSÍVEL ENCONTRAR GASTOS "
               		+ "POR CONTA DO ERRO A SEGUIR"+ mensagemErro ;
               gb.mostraMensagemErro(mensagem);
@@ -309,7 +295,6 @@ public class GastoJpaController implements Serializable {
           
 
         public void apresentaMensagem(){
-            GastoBean gb = new GastoBean();
             String mensagem = "NÃO FOI POSSÍVEL ENCONTRAR GASTOS " ;
             gb.mostraMensagemErro(mensagem);
         }

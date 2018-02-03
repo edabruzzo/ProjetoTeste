@@ -5,19 +5,22 @@
  */
 package DAO;
 
-import DAO.exceptions.NonexistentEntityException;
 import java.io.Serializable;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import modelo.Usuario;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import DAO.exceptions.NonexistentEntityException;
+import TransactionsAnnotations.Transacional;
+import factory.JPAFactory;
 import modelo.Papel;
+import modelo.Usuario;
 
 /**
  *
@@ -25,22 +28,22 @@ import modelo.Papel;
  */
 public class PapelJpaController implements Serializable {
 
-   
-    private EntityManagerFactory emf =  Persistence.createEntityManagerFactory( "ControleFinanceiroPU" );
 
+	private static final long serialVersionUID = -8089341738409196078L;
 
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
-
+	@Inject
+    private JPAFactory jpa;
+    
+	
+	@Transacional
     public void create(Papel papel) {
-        if (papel.getUsuario() == null) {
+        
+    	if (papel.getUsuario() == null) {
             papel.setUsuario(new ArrayList<Usuario>());
         }
         EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
+             em = jpa.getEntityManager();
+             // em.getTransaction().begin();
             List<Usuario> attachedUsuario = new ArrayList<Usuario>();
             for (Usuario usuarioUsuarioToAttach : papel.getUsuario()) {
                 usuarioUsuarioToAttach = em.getReference(usuarioUsuarioToAttach.getClass(), usuarioUsuarioToAttach.getIdUsuario());
@@ -57,20 +60,17 @@ public class PapelJpaController implements Serializable {
                     oldPapelOfUsuarioUsuario = em.merge(oldPapelOfUsuarioUsuario);
                 }
             }
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-           
-            }
-        }
+            // em.getTransaction().commit();
+         
     }
 
+	
+	@Transacional
     public void edit(Papel papel) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
+            em = jpa.getEntityManager();
+            //em.getTransaction().begin();
             Papel persistentPapel = em.find(Papel.class, papel.getIdPapel());
             List<Usuario> usuarioOld = persistentPapel.getUsuario();
             List<Usuario> usuarioNew = papel.getUsuario();
@@ -99,7 +99,7 @@ public class PapelJpaController implements Serializable {
                     }
                 }
             }
-            em.getTransaction().commit();
+            //em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
@@ -109,19 +109,15 @@ public class PapelJpaController implements Serializable {
                 }
             }
             throw ex;
-        } finally {
-            if (em != null) {
-               em.close();
-          
-            }
-        }
+        } 
     }
 
+	@Transacional
     public void destroy(int id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
+            em = jpa.getEntityManager();
+            //em.getTransaction().begin();
             Papel papel;
             try {
                 papel = em.getReference(Papel.class, id);
@@ -135,13 +131,9 @@ public class PapelJpaController implements Serializable {
                 usuarioUsuario = em.merge(usuarioUsuario);
             }
             em.remove(papel);
-            em.getTransaction().commit();
+            // em.getTransaction().commit();
         } finally {
-            if (em != null) {
-               em.close();
-           
-            }
-        }
+                 }
     }
 
     public List<Papel> findPapelEntities() {
@@ -153,7 +145,7 @@ public class PapelJpaController implements Serializable {
     }
 
     private List<Papel> findPapelEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
+        EntityManager em = jpa.getEntityManager();
         List<Papel> listaPapeis = new ArrayList();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
@@ -167,35 +159,33 @@ public class PapelJpaController implements Serializable {
             return (List<Papel>) q.getResultList();
             
         } finally{
-            em.close();
+         
         }
     }
     
    
       public List<Papel> findPapelMenosSuper(){
-          EntityManager em = getEntityManager();
+          EntityManager em = jpa.getEntityManager();
           String sqlString = "SELECT * FROM tb_papel WHERE IDPAPEL <> 1;";
           Query q = em.createNativeQuery(sqlString, Papel.class);
           
           return (List<Papel>)q.getResultList();
           
           
-          
       }
    
    
     public Papel findPapel(int id) {
-        EntityManager em = getEntityManager();
+        EntityManager em = jpa.getEntityManager();
         try {
             return em.find(Papel.class, id);
         } finally {
-            em.close();
            
         }
     }
 
     public int getPapelCount() {
-        EntityManager em = getEntityManager();
+        EntityManager em = jpa.getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<Papel> rt = cq.from(Papel.class);
@@ -203,8 +193,7 @@ public class PapelJpaController implements Serializable {
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
         } finally {
-            em.close();
-      
+         
         }
     }
     

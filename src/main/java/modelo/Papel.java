@@ -23,7 +23,9 @@ import javax.persistence.Table;
 @Table (name = "tb_papel")
 public class Papel implements Serializable {
     
-    @Id
+	private static final long serialVersionUID = 1646458488277900394L;
+
+	@Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE)
     private int idPapel;
    

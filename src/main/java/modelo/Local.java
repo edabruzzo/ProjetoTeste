@@ -7,6 +7,7 @@ package modelo;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,17 +16,24 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  *
  * @author Emm
  */
+
+
+
+
+
 @Entity
 @Table (name = "tb_local")
 public class Local implements Serializable{
-    
-    @Id
+
+	
+	private static final long serialVersionUID = 4725506891615545706L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id_local;
     

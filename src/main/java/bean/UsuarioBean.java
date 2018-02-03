@@ -9,9 +9,14 @@ import DAO.PapelJpaController;
 import DAO.UsuarioJpaController;
 import DAO.exceptions.NonexistentEntityException;
 import Default.CriptografiaSenha;
+
+import java.io.Serializable;
 import java.util.List;
+
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
-import javax.faces.view.ViewScoped;
 import modelo.Papel;
 import modelo.Usuario;
 
@@ -20,18 +25,35 @@ import modelo.Usuario;
  * @author Emm
  */
 @Named
-@ViewScoped
-public class UsuarioBean {
+@SessionScoped
+public class UsuarioBean implements Serializable{
 
-    /**
+    
+	private static final long serialVersionUID = -7444696162507993250L;
+
+	/**
      * Creates a new instance of UsuarioBean
      */
     public UsuarioBean() {
     }
     
     private Usuario usuario = new Usuario();
+    
     private Integer idPapel;
+    
     private Papel papel = new Papel();
+
+    private LoginFilter lf = new LoginFilter();
+
+    @Inject
+    private PapelJpaController papelDAO;
+
+    @Inject
+    private UsuarioJpaController usuarioDAO;
+
+    @Inject
+    private CriptografiaSenha criptoSenha;
+    
     private boolean canEdit = false;
 
     public boolean isCanEdit() {
@@ -71,11 +93,8 @@ public class UsuarioBean {
        
         boolean possuiPrivilegio = false;
         boolean possuiPrivilegioSuper = false;
-        LoginFilter lf = new LoginFilter();
         possuiPrivilegio = lf.verificaPrivilegio();
         possuiPrivilegioSuper = lf.verificaPrivilegioSuperAdmin();
-        
-         PapelJpaController papelDAO = new PapelJpaController();
         
         if(possuiPrivilegio & !possuiPrivilegioSuper){
        
@@ -96,17 +115,14 @@ public class UsuarioBean {
     public void criarNovoUsuario() throws Exception{
         
          boolean possuiPrivilegio = false;
-        LoginFilter lf = new LoginFilter();
-        possuiPrivilegio = lf.verificaPrivilegio();
+         possuiPrivilegio = lf.verificaPrivilegio();
         
         if(possuiPrivilegio){
             
-        PapelJpaController papelDAO = new PapelJpaController();
         this.papel = papelDAO.findPapel(this.idPapel); 
         this.usuario.setPapel(this.papel);
             
-         UsuarioJpaController usuarioDAO = new UsuarioJpaController();
-         CriptografiaSenha criptoSenha = new CriptografiaSenha();
+
          String senhaCriptografada = criptoSenha.convertStringToMd5(this.usuario.getPassword());
          this.usuario.setPassword(senhaCriptografada);
          if(usuarioDAO.findByLogin(this.usuario.getLogin()) == null){
@@ -128,12 +144,10 @@ public class UsuarioBean {
     
     
     public List<Usuario> listaUsuarios(){
-         UsuarioJpaController usuarioDAO = new UsuarioJpaController();
          return usuarioDAO.findUsuarioEntities();
     }
     
     public void deletaUsuario(Usuario usuario) throws NonexistentEntityException{
-         UsuarioJpaController usuarioDAO = new UsuarioJpaController();
          usuarioDAO.destroy(usuario.getIdUsuario());
         
     }
@@ -141,7 +155,6 @@ public class UsuarioBean {
     public void editaUsuario(){
         
         boolean possuiPrivilegio = false;
-        LoginFilter lf = new LoginFilter();
         possuiPrivilegio = lf.verificaPrivilegio();
         if(possuiPrivilegio){
             this.canEdit = true;
@@ -176,7 +189,6 @@ no seu objeto faça o método que recebe o objeto cliente*/
      public void salvarUsuarioEditado() throws Exception{
         
         boolean possuiPrivilegio = false;
-        LoginFilter lf = new LoginFilter();
         possuiPrivilegio = lf.verificaPrivilegio();
         this.canEdit = false;
         

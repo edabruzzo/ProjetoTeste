@@ -5,42 +5,46 @@
  */
 package DAO;
 
-import DAO.exceptions.NonexistentEntityException;
 import java.io.Serializable;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import modelo.Projeto;
-import modelo.Gasto;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import DAO.exceptions.NonexistentEntityException;
+import TransactionsAnnotations.Transacional;
+import factory.JPAFactory;
+import modelo.Gasto;
 import modelo.Local;
+import modelo.Projeto;
 
 /**
  *
  * @author Emm
  */
 public class LocalJpaController implements Serializable {
+	private static final long serialVersionUID = 5495412493613862564L;
 
-      private EntityManagerFactory emf =  Persistence.createEntityManagerFactory( "ControleFinanceiroPU" );
+	
+	@Inject
+	private JPAFactory jpa;
 
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
-
+	
+	
+	@Transacional
     public void create(Local local) {
         if (local.getGastos() == null) {
             local.setGastos(new ArrayList<Gasto>());
         }
         EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
+            em = jpa.getEntityManager();
+//            em.getTransaction().begin();
             Projeto projeto = local.getProjeto();
             if (projeto != null) {
                 projeto = em.getReference(projeto.getClass(), projeto.getId_projeto());
@@ -66,20 +70,18 @@ public class LocalJpaController implements Serializable {
                     oldLocalOfGastosGasto = em.merge(oldLocalOfGastosGasto);
                 }
             }
-            em.getTransaction().commit();
+            //            em.getTransaction().commit();
         } finally {
-            if (em != null) {
-              em.close();
-         
-            }
         }
     }
 
+	
+	@Transacional
     public void edit(Local local) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
+            em = jpa.getEntityManager();
+            //em.getTransaction().begin();
             Local persistentLocal = em.find(Local.class, local.getId_local());
             Projeto projetoOld = persistentLocal.getProjeto();
             Projeto projetoNew = local.getProjeto();
@@ -122,7 +124,7 @@ public class LocalJpaController implements Serializable {
                     }
                 }
             }
-            em.getTransaction().commit();
+            //em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
@@ -132,19 +134,17 @@ public class LocalJpaController implements Serializable {
                 }
             }
             throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-          
-            }
         }
+        
     }
 
+	
+	@Transacional
     public void destroy(int id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
+            em = jpa.getEntityManager();
+            //em.getTransaction().begin();
             Local local;
             try {
                 local = em.getReference(Local.class, id);
@@ -163,12 +163,9 @@ public class LocalJpaController implements Serializable {
                 gastosGasto = em.merge(gastosGasto);
             }
             em.remove(local);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-              em.close();
-         
-            }
+            //em.getTransaction().commit();
+        } catch (EntityNotFoundException enfe) {
+            throw new NonexistentEntityException("The local with id " + id + " no longer exists.", enfe);
         }
     }
 
@@ -181,8 +178,7 @@ public class LocalJpaController implements Serializable {
     }
 
     private List<Local> findLocalEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
+        EntityManager em = jpa.getEntityManager();
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(Local.class));
             Query q = em.createQuery(cq);
@@ -191,24 +187,17 @@ public class LocalJpaController implements Serializable {
                 q.setFirstResult(firstResult);
             }
             return q.getResultList();
-        } finally {
-            em.close();
-          
-        }
     }
 
     public Local findLocal(int id) {
-        EntityManager em = getEntityManager();
-        try {
+        EntityManager em = jpa.getEntityManager();
+        
             return em.find(Local.class, id);
-        } finally {
-            em.close();
-          
-        }
+        
     }
 
     public int getLocalCount() {
-        EntityManager em = getEntityManager();
+        EntityManager em = jpa.getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<Local> rt = cq.from(Local.class);
@@ -216,7 +205,6 @@ public class LocalJpaController implements Serializable {
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
         } finally {
-            em.close();
           
         }
     }

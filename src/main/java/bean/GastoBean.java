@@ -10,18 +10,22 @@ import DAO.LocalJpaController;
 import DAO.ProjetoJpaController;
 import DAO.UsuarioJpaController;
 import DAO.exceptions.NonexistentEntityException;
+
+import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.PostConstruct;
+
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.faces.context.FacesContext;
+
 import modelo.Gasto;
 import modelo.Local;
 import modelo.Projeto;
 import modelo.Usuario;
-import org.primefaces.event.data.FilterEvent;
-import javax.enterprise.context.SessionScoped;
 
 
 /**
@@ -30,12 +34,31 @@ import javax.enterprise.context.SessionScoped;
  */
 @Named
 @SessionScoped
-public class GastoBean {
+public class GastoBean implements Serializable {
     
-    private Gasto gasto = new Gasto();
-    private Gasto gastoEditado = new Gasto();
-    private Local local = new Local();
-    private Usuario usuario = new Usuario();
+	private static final long serialVersionUID = -6640908587320073526L;
+	
+	
+	private Gasto gasto = new Gasto();
+	
+	@Inject
+	private LoginFilter lf;
+
+	private Gasto gastoEditado = new Gasto();
+
+	private Local local = new Local();
+
+	private Usuario usuario = new Usuario();
+
+    @Inject
+    private LocalJpaController localDAO;
+    
+    @Inject
+    private ProjetoJpaController projetoDAO;
+    
+    @Inject
+    private UsuarioJpaController usuarioDAO;
+    
     private int projetoID;
     private int localID;
     private int IDUsuarioPesquisado;
@@ -44,9 +67,18 @@ public class GastoBean {
     private List<Gasto> listaGastosTotais;
     private double gastosFiltrados;
     private double gastosTotais;
-   
+
     
-      public List<Gasto> getListaGastosFiltrados() {
+    private GastoJpaController gastoDAO;
+    
+    
+    @Inject
+    public GastoBean(GastoJpaController gastoDAO) {
+		super();
+		this.gastoDAO = gastoDAO;
+	}
+
+	public List<Gasto> getListaGastosFiltrados() {
         return listaGastosFiltrados;
     }
 
@@ -56,8 +88,10 @@ public class GastoBean {
 
 
     public List<Gasto> getListaGastosTotais() {
-          GastoJpaController gastoDAO = new GastoJpaController();
-          LoginFilter lf = new LoginFilter();
+        
+      // Esta dependencia passou a ser injetada pelo CDI, através do construtor
+      //  GastoJpaController gastoDAO = new GastoJpaController();
+     //LoginFilter lf = new LoginFilter();
           
           if (lf.verificaPrivilegio()) {
 
@@ -171,7 +205,8 @@ public class GastoBean {
     
     public void adicionarGasto() throws NonexistentEntityException, Exception{
     
-        GastoJpaController gastoDAO = new GastoJpaController();
+        // Esta dependencia passou a ser injetada pelo CDI, através do construtor
+     	//  GastoJpaController gastoDAO = new GastoJpaController();
         boolean gravado = false;
         
         if (gastoDAO.findGasto(gasto.getId_gasto()) == null) {
@@ -213,8 +248,9 @@ public class GastoBean {
         
     
         public void gravaLocal(){
-            
-       LocalJpaController localDAO = new LocalJpaController();
+        
+       	//Injetando esta dependencia pelo CDI através de atributo de classe anotado com @Inject
+       //LocalJpaController localDAO = new LocalJpaController();
         this.local = localDAO.findLocal(localID);
         this.gasto.setLocal(local);
                     
@@ -222,9 +258,8 @@ public class GastoBean {
     
         public List<Local> selecionaLocais(){
             
-            LocalJpaController locaisDAO = new LocalJpaController();
            
-            List<Local> listaLocais =  locaisDAO.findLocalEntities();
+            List<Local> listaLocais =  localDAO.findLocalEntities();
             
             return listaLocais;
         }
@@ -232,7 +267,7 @@ public class GastoBean {
         
         public List<Projeto> selecionaProjetos(){
             
-            ProjetoJpaController projetoDAO = new ProjetoJpaController();
+            //ProjetoJpaController projetoDAO = new ProjetoJpaController();
             List<Projeto> listaProjetos = projetoDAO.findProjetoEntities();
             return listaProjetos;
         }
@@ -240,7 +275,7 @@ public class GastoBean {
         
            public List<Usuario> selecionaUsuarios(){
             
-            UsuarioJpaController usuarioDAO = new UsuarioJpaController();
+        	//UsuarioJpaController usuarioDAO = new UsuarioJpaController();
            
             List<Usuario> listaUsuarios =  usuarioDAO.findUsuarioEntities();
             
@@ -249,7 +284,7 @@ public class GastoBean {
            
              public void gravaUsuario(){
             
-            UsuarioJpaController usuarioDAO = new UsuarioJpaController();
+            //UsuarioJpaController usuarioDAO = new UsuarioJpaController();
             this.usuario = usuarioDAO.findUsuario(getIDUsuarioPesquisado());
             gasto.setUsuario(usuario);
         }
@@ -259,7 +294,7 @@ public class GastoBean {
              
              public void editaGasto() throws Exception{
                  
-            	 LoginFilter lf = new LoginFilter();
+            	 //	 LoginFilter lf = new LoginFilter();
                  boolean possuiPrivilegio = lf.verificaPrivilegio();
                  
                  if(possuiPrivilegio){
@@ -304,7 +339,7 @@ public class GastoBean {
                 this.gastoEditado = gasto; 
                  */
                 
-                LoginFilter lf = new LoginFilter();
+            	//LoginFilter lf = new LoginFilter();
                  boolean possuiPrivilegio = lf.verificaPrivilegio();
                  
                  if(possuiPrivilegio & this.getGastoEditado() != null){
@@ -319,12 +354,13 @@ public class GastoBean {
         
              public void deletaGasto() throws NonexistentEntityException{
                  
-                 LoginFilter lf = new LoginFilter();
+            	 //LoginFilter lf = new LoginFilter();
                  boolean possuiPrivilegio = lf.verificaPrivilegio();
                  
                  if(possuiPrivilegio & this.gasto != null){
                  
-                 GastoJpaController gastoDAO = new GastoJpaController();
+                // Esta dependencia passou a ser injetada pelo CDI, através do construtor
+              	//  GastoJpaController gastoDAO = new GastoJpaController();
                  gastoDAO.destroy(this.gasto.getId_gasto());
                  this.gastosTotais = 0;
     

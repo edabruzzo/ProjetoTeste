@@ -37,7 +37,7 @@
         <p:outputLabel value="PASSWORD" for="password"/>
         <p:password id="password" value="#{loginFilter.usuario.password}" 
                     required="true" feedback="true"/>
-        <p:commandButton action="#{loginFilter.validaAcesso()}" value="Login" id="validaAcesso"/>
+        <p:commandButton action="#{loginFilter.validaAcesso}" value="Login" id="validaAcesso"/>
         </h:panelGrid>
         </p:fieldset>
       </h:form>

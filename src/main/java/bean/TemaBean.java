@@ -1,11 +1,18 @@
 package bean;
 
 import javax.inject.Named;
+
+import java.io.Serializable;
+
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.SessionScoped;
 
 @Named
-@SessionScoped
-public class TemaBean {
+@ApplicationScoped
+public class TemaBean implements Serializable{
+	
+	private static final long serialVersionUID = -4710007662726637635L;
+
 	
 	private String tema = "vader";
 

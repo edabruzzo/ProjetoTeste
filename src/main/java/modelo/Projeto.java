@@ -25,7 +25,9 @@ import javax.persistence.Transient;
 @Table (name  = "tb_projeto")
 public class Projeto implements Serializable {
     
-    @Id 
+	private static final long serialVersionUID = -7691438838266599757L;
+
+	@Id 
     @GeneratedValue (strategy = GenerationType.SEQUENCE)
     private int id_projeto;
     

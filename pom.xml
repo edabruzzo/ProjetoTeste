@@ -39,6 +39,13 @@ https://stackoverflow.com/questions/17910574/how-to-create-servlet-3-0-web-appli
 </dependency>
 <!-- https://mvnrepository.com/artifact/javax.faces/javax.faces-api -->
 
+
+<dependency>
+<groupId>controleOrcamento.library</groupId>
+  <artifactId>factory</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+
 <dependency>
     <groupId>mysql</groupId>
     <artifactId>mysql-connector-java</artifactId>

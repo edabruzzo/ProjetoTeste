@@ -6,10 +6,15 @@
 package bean;
 
 import DAO.ProjetoJpaController;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import javax.inject.Named;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+
 import modelo.Projeto;
 
 /**
@@ -17,10 +22,15 @@ import modelo.Projeto;
  * @author Emm
  */
 @Named
-@ViewScoped
-public class ProjetoBean {
+@SessionScoped
+public class ProjetoBean implements Serializable{
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8173294256756299119L;
+
+	/**
      * Creates a new instance of ProjetoBean
      */
     public ProjetoBean() {
@@ -28,6 +38,9 @@ public class ProjetoBean {
     
     private Projeto projeto = new Projeto();
 
+    @Inject
+    ProjetoJpaController projetoDAO;
+    
     public Projeto getProjeto() {
         return projeto;
     }
@@ -39,7 +52,6 @@ public class ProjetoBean {
     
     public void criarNovoProjeto(){
         
-        ProjetoJpaController projetoDAO = new ProjetoJpaController();
         this.projeto.setAtivo(true);
         projetoDAO.create(this.projeto);
         
@@ -48,7 +60,6 @@ public class ProjetoBean {
     
     public List<Projeto> listaProjetos(){
         
-    ProjetoJpaController projetoDAO = new ProjetoJpaController();
     List<Projeto> listaProjetos = new ArrayList();
     
     listaProjetos = projetoDAO.findProjetoEntities();

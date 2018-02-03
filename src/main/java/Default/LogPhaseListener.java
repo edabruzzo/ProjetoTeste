@@ -5,6 +5,8 @@
  */
 package Default;
 
+import java.io.Serializable;
+
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
@@ -13,12 +15,12 @@ import javax.faces.event.PhaseListener;
  *
  * @author Emm
  */
-public class LogPhaseListener implements PhaseListener {
+public class LogPhaseListener implements PhaseListener, Serializable {
     
     
-     private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1064930936747939511L;
 
-    @Override
+	@Override
     public void afterPhase(PhaseEvent pe) {
  //       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

@@ -7,13 +7,14 @@ package bean;
 
 
 
-import DAO.UsuarioJpaController;
-import Default.CriptografiaSenha;
 import java.io.IOException;
+import java.io.Serializable;
+
+import javax.enterprise.context.ApplicationScoped;
 import javax.faces.application.FacesMessage;
-import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -23,6 +24,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import DAO.UsuarioJpaController;
+import Default.CriptografiaSenha;
+import helper.MessageHelper;
 import modelo.Usuario;
 
 
@@ -32,18 +37,37 @@ import modelo.Usuario;
  * @author Emm
  */
 @Named
-@SessionScoped
-public class LoginFilter implements Filter {
+@ApplicationScoped
+public class LoginFilter implements Filter, Serializable{
     
-private static final long serialVersionUID = 1L;
+
+private static final long serialVersionUID = -8369585486567279810L;
+
+
+
+@Inject
+private MessageHelper helper;
+
+@Inject
+private FacesContext context;
+
+
 
 private  boolean permiteAcesso = false;
 private boolean mostra = false;
 
-  private static Usuario usuario = new Usuario();
+//  private static Usuario usuario = new Usuario();
   
+       private static Usuario usuario = new Usuario();
 
-
+       @Inject  
+       private UsuarioJpaController usuarioDAO;
+       
+       private Usuario novoUsuario = new Usuario();
+       
+       @Inject
+       private  CriptografiaSenha criptoSenha;         
+         
     public boolean isPermiteAcesso() {
         return permiteAcesso;
     }
@@ -67,13 +91,10 @@ private boolean mostra = false;
             
            String redireciona = "/security/login?faces-redirect=true";
            
-            
-            UsuarioJpaController usuarioDAO = new UsuarioJpaController();
-            Usuario novoUsuario = new Usuario();
          
             //faz a criptografia da senha entrada pelo usuÃ¡rio antes de 
            //gravar no banco
-            CriptografiaSenha criptoSenha = new CriptografiaSenha();
+            
             String senhaCriptografada = criptoSenha.convertStringToMd5(this.usuario.getPassword());
             this.usuario.setPassword(senhaCriptografada);
             novoUsuario = usuarioDAO.findByLoginSenha(this.usuario.getLogin(), this.usuario.getPassword());
@@ -97,15 +118,12 @@ private boolean mostra = false;
         
         public void apresentaMensagemErro(String idElemento, String mensagemErro){
             
-            FacesMessage mensagem = new FacesMessage(mensagemErro);    
-            FacesContext.getCurrentInstance().addMessage(idElemento, mensagem); 
-            
+            helper.onFlash().addMessage(idElemento, mensagemErrro);
             
         }
                 
               public void apresentaMensagemErro(String mensagemErro){
             
-            FacesMessage mensagem = new FacesMessage(mensagemErro);    
             FacesContext.getCurrentInstance().addMessage(null, mensagem); 
             
             
@@ -234,11 +252,10 @@ private boolean mostra = false;
                public void solicitarNovaSenha() throws Exception {
        
              
-             UsuarioJpaController usuarioDAO = new UsuarioJpaController();
+             //UsuarioJpaController usuarioDAO = new UsuarioJpaController();
              Usuario usuarioSemSenha = usuarioDAO.findByLogin(this.usuario.getLogin());
              if(usuarioSemSenha != null){
                  
-             CriptografiaSenha criptoSenha = new CriptografiaSenha();
              criptoSenha.gerarNovaSenha(usuarioSemSenha);
              
             FacesMessage mensagem = new FacesMessage("                                            "
@@ -310,19 +327,35 @@ private boolean mostra = false;
 
 		public boolean isMostra() {
 			
-			 if (this.usuario.getNome() != null){
-                 this.mostra = true;
-           }else {
-          	 this.mostra = false;
-           }
-			return mostra;
+			return mostraMenu();
+		
 		}
 
 		public void setMostra(boolean mostra) {
 			this.mostra = mostra;
 		}
-           
-           
-          
+            
+
+		public boolean mostraMenu() {
+			
+			
+			try {
+				
+				if (LoginFilter.usuario.getNome() != null){
+		             this.setMostra(true);
+		       }			
+				
+				
+			}catch(NullPointerException npe) {
+				
+				this.mostra = false;
+				
+			}
+
+			return mostra;
+			
+		}
+		
+		
    
   }

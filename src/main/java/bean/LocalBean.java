@@ -7,10 +7,16 @@ package bean;
 
 import DAO.LocalJpaController;
 import DAO.ProjetoJpaController;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 import javax.inject.Named;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+
 import modelo.Local;
 import modelo.Projeto;
 
@@ -19,19 +25,31 @@ import modelo.Projeto;
  * @author Emm
  */
 @Named
-@ViewScoped
-public class LocalBean {
+@SessionScoped
+public class LocalBean implements Serializable{
 
-    /**
+
+	private static final long serialVersionUID = -716678353134143011L;
+
+	/**
      * Creates a new instance of LocalBean
      */
     public LocalBean() {
     }
     
     private int projetoID;
+    
     private Projeto projeto = new Projeto();
+    
     private Local local = new Local();
 
+    @Inject
+    private ProjetoJpaController projetoDAO;
+    
+    @Inject
+    private LocalJpaController localDAO;    
+    
+    
     public Local getLocal() {
         return local;
     }
@@ -60,7 +78,7 @@ public class LocalBean {
     
     public List<Projeto> listaProjetos(){
         
-        ProjetoJpaController projetoDAO = new ProjetoJpaController();
+    	//ProjetoJpaController projetoDAO = new ProjetoJpaController();
          List<Projeto> listaProjetos = new ArrayList();
          listaProjetos = projetoDAO.findProjetoEntities();
          return listaProjetos;
@@ -68,7 +86,7 @@ public class LocalBean {
     }
     
     public void gravaProjetoNoLocal(){
-         ProjetoJpaController projetoDAO = new ProjetoJpaController();
+    	//ProjetoJpaController projetoDAO = new ProjetoJpaController();
          this.projeto = projetoDAO.findProjeto(projetoID);
          this.local.setProjeto(this.projeto);
     }
@@ -76,14 +94,15 @@ public class LocalBean {
     
     public void criaNovoLocal(){
         
-        LocalJpaController localDAO = new LocalJpaController();
+//LocalJpaController localDAO = new LocalJpaController();
         localDAO.create(this.local);
         
     }
     
     
     public List<Local> listaLocais(){
-          LocalJpaController localDAO = new LocalJpaController();
+    	
+//        LocalJpaController localDAO = new LocalJpaController();
         List<Local> listaLocais = new ArrayList();  
         listaLocais = localDAO.findLocalEntities();
         return listaLocais;

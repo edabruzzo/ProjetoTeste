@@ -7,32 +7,47 @@ import DAO.GastoJpaController;
 import modelo.Gasto;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.DateAxis;
 import org.primefaces.model.chart.LineChartSeries;
+
+import javax.inject.Inject;
 import javax.inject.Named;
-import javax.faces.view.ViewScoped;
 
 
 @Named
-@ViewScoped
+@RequestScoped
 public class ChartView implements Serializable {
  
-    private LineChartModel animatedModel1;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4776381042414260456L;
+
+	private LineChartModel animatedModel1;
     private boolean mostraGrafico = false;
 
     //https://github.com/algaworks/curso-javaee-primefaces/blob/master/ResolvendoErroGraficoPrimeFaces/src/main/java/com/algaworks/pedidovenda/controller/GraficoPedidosCriadosBean.java
     private static DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+    
+    @Inject
+    private GastoJpaController gastoDAO;        
+
+/*    @Inject
+    public ChartView(GastoJpaController gastoDAO) {
+		super();
+		this.gastoDAO = gastoDAO;
+	}*/
+
+    
     
     public boolean isMostraGrafico() {
         return mostraGrafico;
@@ -79,8 +94,9 @@ public class ChartView implements Serializable {
         series1.setLabel("CIDADANIA");
         series1.setFill(true);
         
-        //candidato a ser injetado
-        GastoJpaController gastoDAO = new GastoJpaController();        
+        //ao invés de instanciar aqui o objeto, passar a responsabilidade para o CDI
+        //através de um atributo de classe e um construtor
+        //GastoJpaController gastoDAO = new GastoJpaController();        
         List<Gasto> listaGastos = gastoDAO.listaGastosByProjeto(1);
 
        

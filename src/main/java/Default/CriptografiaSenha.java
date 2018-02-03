@@ -6,21 +6,30 @@
 package Default;
 
 import DAO.UsuarioJpaController;
+
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.faces.bean.ManagedBean;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import modelo.Usuario;
 
 /**
  *
  * @author Emm
  */
-@ManagedBean
-public class CriptografiaSenha {
-    
+@Named
+@RequestScoped
+public class CriptografiaSenha implements Serializable{
+
+	private static final long serialVersionUID = 4347824241169545934L;
+
+	@Inject
+	private  UsuarioJpaController usuarioDAO;
              
             
             public String convertStringToMd5(String valor) {
@@ -59,7 +68,7 @@ public class CriptografiaSenha {
             
          public void criptografaSenhaUsuario(Usuario usuario) throws Exception{
             
-            UsuarioJpaController usuarioDAO = new UsuarioJpaController();
+          
              
             String senhaCriptografada = convertStringToMd5(usuario.getPassword());
             usuario.setPassword(senhaCriptografada);
@@ -88,7 +97,6 @@ public class CriptografiaSenha {
                String novaSenhaCriptografada = convertStringToMd5(novaSenha);
                usuario.setPassword(novaSenhaCriptografada);
                
-               UsuarioJpaController usuarioDAO = new UsuarioJpaController();
                usuarioDAO.edit(usuario);
                
                enviarNovaSenhaEmailUsuario(novaSenha);

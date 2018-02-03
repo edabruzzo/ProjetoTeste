@@ -5,22 +5,25 @@
  */
 package DAO;
 
-import DAO.exceptions.NonexistentEntityException;
-import Default.CriptografiaSenha;
-import bean.LoginFilter;
 import java.io.Serializable;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import modelo.Papel;
-import modelo.Gasto;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import DAO.exceptions.NonexistentEntityException;
+import Default.CriptografiaSenha;
+import TransactionsAnnotations.Transacional;
+import bean.LoginFilter;
+import factory.JPAFactory;
+import modelo.Gasto;
+import modelo.Papel;
 import modelo.Usuario;
 
 /**
@@ -29,21 +32,36 @@ import modelo.Usuario;
  */
 public class UsuarioJpaController implements Serializable {
 
-  
-    private EntityManagerFactory emf =  Persistence.createEntityManagerFactory( "ControleFinanceiroPU" );
+ @Inject  
+ private JPAFactory jpa;
+	
+ @Inject
+private PapelJpaController papelDAO;
+ 
+private Papel papel1 = new Papel();
+ 
+private Papel papel2 = new Papel();
+ 
+ private Papel papel3 = new Papel();
 
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
+private Usuario usuario = new Usuario();
 
-    public void create(Usuario usuario) {
+@Inject
+private CriptografiaSenha criptografar;
+
+@Inject
+private LoginFilter lf;
+
+
+@Transacional
+	public void create(Usuario usuario) {
         if (usuario.getGastos() == null) {
             usuario.setGastos(new ArrayList<Gasto>());
         }
         EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
+            em = jpa.getEntityManager();
+            //  em.getTransaction().begin();
             Papel papel = usuario.getPapel();
             if (papel != null) {
                 papel = em.getReference(papel.getClass(), papel.getIdPapel());
@@ -69,20 +87,18 @@ public class UsuarioJpaController implements Serializable {
                     oldUsuarioOfGastosGasto = em.merge(oldUsuarioOfGastosGasto);
                 }
             }
-            em.getTransaction().commit();
+            //     em.getTransaction().commit();
         } finally {
-            if (em != null) {
-                em.close();
-           
-            }
         }
     }
 
+
+@Transacional
     public void edit(Usuario usuario) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
+            em = jpa.getEntityManager();
+            //em.getTransaction().begin();
             Usuario persistentUsuario = em.find(Usuario.class, usuario.getIdUsuario());
             Papel papelOld = persistentUsuario.getPapel();
             Papel papelNew = usuario.getPapel();
@@ -125,7 +141,7 @@ public class UsuarioJpaController implements Serializable {
                     }
                 }
             }
-            em.getTransaction().commit();
+            // em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
@@ -136,18 +152,16 @@ public class UsuarioJpaController implements Serializable {
             }
             throw ex;
         } finally {
-            if (em != null) {
-              em.close();
-          
-            }
         }
     }
 
+
+@Transacional
     public void destroy(int id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
+            em = jpa.getEntityManager();
+            //em.getTransaction().begin();
             Usuario usuario;
             try {
                 usuario = em.getReference(Usuario.class, id);
@@ -166,12 +180,8 @@ public class UsuarioJpaController implements Serializable {
                 gastosGasto = em.merge(gastosGasto);
             }
             em.remove(usuario);
-            em.getTransaction().commit();
+            // em.getTransaction().commit();
         } finally {
-            if (em != null) {
-                em.close();
-           
-            }
         }
     }
 
@@ -184,7 +194,7 @@ public class UsuarioJpaController implements Serializable {
     }
 
     private List<Usuario> findUsuarioEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
+        EntityManager em = jpa.getEntityManager();
         List<Usuario> listaUsuario = new ArrayList();
        
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
@@ -198,32 +208,27 @@ public class UsuarioJpaController implements Serializable {
         
         if (listaUsuario.isEmpty()){
         
-        PapelJpaController papelDAO = new PapelJpaController();
-        Papel papel1 = new Papel();
+        
         papel1.setAtivo(true);
         papel1.setDescPapel("SUPER ADMINISTRADOR");
         papel1.setPrivAdmin(true);
         papel1.setPrivSuperAdmin(true);
         papelDAO.create(papel1);
         
-        Papel papel2 = new Papel();
+
         papel2.setAtivo(true);
         papel2.setDescPapel("ADMINISTRADOR");
         papel2.setPrivAdmin(true);
         papelDAO.create(papel2);
         
         
-        Papel papel3 = new Papel();
         papel3.setAtivo(true);
         papel3.setDescPapel("USUÁRIO");
         papelDAO.create(papel3);
         
-        
-            
-        Usuario usuario = new Usuario();
         usuario.setLogin("SUPERADMIN");
         
-        CriptografiaSenha criptografar = new CriptografiaSenha();
+        
         String senhaCriptografada = criptografar.convertStringToMd5("SUPERADMIN.123");
         
         usuario.setPassword(senhaCriptografada);
@@ -234,7 +239,6 @@ public class UsuarioJpaController implements Serializable {
             
        }
             
-        em.close();
         
         return listaUsuario;
         
@@ -242,17 +246,16 @@ public class UsuarioJpaController implements Serializable {
     }
 
     public Usuario findUsuario(int id) {
-        EntityManager em = getEntityManager();
+        EntityManager em = jpa.getEntityManager();
         try {
             return em.find(Usuario.class, id);
         } finally {
-            em.close();
            
         }
     }
 
     public int getUsuarioCount() {
-        EntityManager em = getEntityManager();
+        EntityManager em = jpa.getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<Usuario> rt = cq.from(Usuario.class);
@@ -260,7 +263,6 @@ public class UsuarioJpaController implements Serializable {
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
         } finally {
-            em.close();
            
         }
     }
@@ -268,8 +270,7 @@ public class UsuarioJpaController implements Serializable {
     
     public Usuario findByLoginSenha(String login, String senha){
         
-        Usuario usuario = new Usuario();
-        EntityManager em = getEntityManager();
+        EntityManager em = jpa.getEntityManager();
         List<Usuario> listaUsuarios = new ArrayList();
         listaUsuarios = findUsuarioEntities();
         if (listaUsuarios != null || !listaUsuarios.isEmpty()){
@@ -291,7 +292,6 @@ public class UsuarioJpaController implements Serializable {
             
         }finally{
         
-        em.close();
          
         }
      }
@@ -302,8 +302,8 @@ public class UsuarioJpaController implements Serializable {
     
     
     public Usuario findByLogin(String login){
-        Usuario usuario = new Usuario();
-        EntityManager em = getEntityManager();
+
+    	EntityManager em = jpa.getEntityManager();
         
         String sql = "SELECT * FROM tb_usuario WHERE LOGIN LIKE '"+
                 login+"'";
@@ -322,7 +322,6 @@ public class UsuarioJpaController implements Serializable {
             
         }finally{
         
-       em.close();
           
         }
     return usuario;
@@ -330,7 +329,6 @@ public class UsuarioJpaController implements Serializable {
     }
     
     public void apresentaMensagemErro(String idElemento, String mensagemErro){
-        LoginFilter lf = new LoginFilter();
         lf.apresentaMensagemErro(idElemento, mensagemErro);
            
     }
