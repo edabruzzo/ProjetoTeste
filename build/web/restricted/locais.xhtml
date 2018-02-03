@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html" 
+      xmlns:f="http://xmlns.jcp.org/jsf/core" 
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    
+  
+    <h:head>
+        <title>CONTROLE DE LOCAIS</title>
+      
+     <!--   <h:outputStylesheet library="css" name="tabelas.css" /> -->
+        <link type="text/css" rel="stylesheet" href="/ControleFinanceiro/style/estilos.css" />
+        	
+    </h:head>
+    
+    
+
+   <ui:composition template="/restricted/_template.xhtml">
+          
+       
+              
+         <ui:define name="titulo">
+			<p:outputPanel> CONTROLE DE LOCAIS </p:outputPanel>
+		</ui:define>
+
+   <ui:define name="conteudo"> 
+          
+        <p:messages class="mensagens-erro"/> 
+          
+          
+          <h:form id="adicionaLocal">
+              <p:fieldset legend="CADASTRO DE LOCAL">
+         <h:panelGrid columns="2">
+          
+          <h:outputLabel value="NOME DO LOCAL" for="nome" />
+          <h:inputText id="nome" value="#{localBean.local.nome}" required="true"
+                             requiredMessage="Nome do local é obrigatório!!!"
+                             validatorMessage="Nome não pode ser superior a 40">
+                    <f:validateLength maximum="40" />
+            </h:inputText>
+           
+               <p:fieldset legend ="GRAVAR PROJETO NO LOCAL">
+               <h:outputLabel value="SELECIONE O PROJETO A QUE O LOCAL ESTÁ RELACIONADO" for="projeto" />
+               <h:selectOneMenu value="#{localBean.projetoID}" >
+                   <f:selectItems  value="#{localBean.listaProjetos()}" var="projeto"
+                                itemLabel="#{projeto.nome}" itemValue="#{projeto.id_projeto}" />
+                </h:selectOneMenu>
+              <h:commandButton id="gravaProjeto" value="GRAVA PROJETO"  action="#{localBean.gravaProjetoNoLocal()}">
+                 
+              </h:commandButton>    
+                </p:fieldset>
+             
+          <h:commandButton id="criarLocal" value="CRIAR NOVO LOCAL"  action="#{localBean.criaNovoLocal()}">
+              </h:commandButton>
+         </h:panelGrid>
+            </p:fieldset>
+        </h:form>
+ 
+
+        
+    <f:view>
+     <h:form>
+         <p:dataTable id="tabelaLocais" value="#{localBean.listaLocais()}" var="item">
+             <f:facet name="header">LOCAIS CADASTRADOS</f:facet>
+             <p:column headerText="ID DO LOCAL">
+                <h:outputText value="#{item.id_local}"/>
+             </p:column>
+             <p:column headerText="NOME">
+                 <h:outputText value="#{item.nome}"/>
+             </p:column>
+             <p:column headerText="PROJETO">
+                 <h:outputText value="#{item.projeto.nome}"/>
+             </p:column>
+         </p:dataTable>
+     </h:form>
+ </f:view>
+
+ 
+ 
+   </ui:define>
+   </ui:composition>
+        </html>

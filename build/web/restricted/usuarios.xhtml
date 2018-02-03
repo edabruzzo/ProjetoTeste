@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html" 
+      xmlns:f="http://xmlns.jcp.org/jsf/core" 
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    
+  
+    <h:head>
+        <title>CONTROLE DE USUÁRIOS</title>
+      
+     <!--   <h:outputStylesheet library="css" name="tabelas.css" /> -->
+        <link type="text/css" rel="stylesheet" href="/ControleFinanceiro/style/estilos.css" />
+        	
+    </h:head>
+    
+    
+
+   <ui:composition template="/restricted/_template.xhtml">
+          
+       
+              
+         <ui:define name="titulo">
+			<p:outputPanel> CONTROLE DE USUÁRIOS </p:outputPanel>
+		</ui:define>
+
+   <ui:define name="conteudo"> 
+          
+        <p:messages class="mensagens-erro"/> 
+       
+        
+          <h:form id="adicionaUsuario">
+            <p:fieldset legend="CADASTRO DE USUÁRIO">
+            <h:panelGrid columns="2">
+          <h:outputLabel value="NOME DO USUÁRIO" for="nome" />
+          <h:inputText id="nome" value="#{usuarioBean.usuario.nome}" required="true"
+                             requiredMessage="Nome do usuário é obrigatório!!!"
+                             validatorMessage="Nome não pode ser superior a 40 caracteres">
+                    <f:validateLength maximum="40" />
+            </h:inputText>
+          
+                    <h:outputLabel value="LOGIN" for="login" />
+          <h:inputText id="login" value="#{usuarioBean.usuario.login}" required="true"
+                             requiredMessage="Login do usuário é obrigatório!!!"
+                             validatorMessage="Login não pode ser superior a 10 caracteres">
+                    <f:validateLength maximum="10" />
+            </h:inputText>
+                    
+         <h:outputLabel value="SENHA" for="password" />
+          <h:inputText id="password" value="#{usuarioBean.usuario.password}" required="true"
+                             requiredMessage="Senha do usuário é obrigatória!!!">
+                             
+            </h:inputText>
+          <h:outputLabel value="E-MAIL" for="email" />
+          <h:inputText id="email" value="#{usuarioBean.usuario.email}" required="true"
+                             requiredMessage="E-mail do usuário é obrigatório!!!">
+                             
+            </h:inputText>
+               <h:outputLabel value="SELECIONE O PAPEL DO USUÁRIO" for="usuarioPapel" />
+               <p:selectOneMenu id="usuarioPapel" value="#{usuarioBean.idPapel}" >
+                   <f:selectItems  value="#{usuarioBean.listaPapeis()}" var="papel"
+                                   itemLabel="#{papel.descPapel}" itemValue="#{papel.idPapel}" >
+                   </f:selectItems>
+                </p:selectOneMenu>
+             
+          <p:commandButton id="criarUsuario" value="CRIAR NOVO USUÁRIO"  
+                           action="#{usuarioBean.criarNovoUsuario()}"
+                            rendered="#{not usuarioBean.canEdit}"
+                            process ="@form, @this" update=":formUsuarios:tabelaUsuarios">
+              
+              </p:commandButton>
+          <p:commandButton value="SALVAR USUÁRIO EDITADO" 
+                       icon="fa fa-fw fa-edit" ajax="false" 
+                        action="#{usuarioBean.criarNovoUsuario()}" 
+                        rendered="#{usuarioBean.canEdit}"  >
+         </p:commandButton>
+            <p:commandButton value="CANCELAR EDIÇÃO" 
+                        ajax="false" 
+                        action="#{usuarioBean.cancelarEdicao()}" 
+                        rendered="#{usuarioBean.canEdit}">
+         </p:commandButton>
+         </h:panelGrid>
+            </p:fieldset>
+        </h:form>
+ 
+        
+        
+             
+        <f:view>
+            <h:form id="formUsuarios">
+                 <p:commandButton value="SALVAR USUÁRIO EDITADO" 
+                       icon="fa fa-fw fa-edit" ajax="false" 
+                        action="#{usuarioBean.salvarUsuarioEditado(item)}" 
+                        rendered="#{not usuarioBean.canEdit}">
+        </p:commandButton>
+                <p:dataTable id="tabelaUsuarios" value="#{usuarioBean.listaUsuarios()}" var="item">
+                <f:facet name="header"> USUÁRIOS CADASTRADOS </f:facet>
+
+                <p:column headerText="ID DO USUARIO">
+                    <h:outputText value="#{item.idUsuario}" rendered="#{not usuarioBean.canEdit}"/>
+                </p:column>
+                <p:column headerText="NOME DO USUÁRIO">
+                    <h:outputText value="#{item.nome}" />
+                    </p:column>
+                <p:column headerText= "LOGIN DO USUÁRIO" >
+                    <h:outputText value="#{item.login}" rendered="#{not usuarioBean.canEdit}"/>
+                    </p:column>
+                <p:column headerText= "SENHA DO USUARIO" >
+               <h:outputText value="#{item.password}" rendered="#{not usuarioBean.canEdit}"/>
+               </p:column>
+                <p:column headerText="PAPEL DO USUÁRIO">
+                <h:outputText value="#{item.papel.descPapel}" rendered="#{not usuarioBean.canEdit}"/>
+             </p:column>
+                <p:column headerText="DELETE">
+                <p:commandButton value="DELETAR" action="#{usuarioBean.deletaUsuario(item)}"
+                                  icon="fa fa-fw fa-remove" ajax="false">
+                    
+                    <f:setPropertyActionListener target="#{usuarioBean.usuario}" value="#{item}"/>
+          </p:commandButton>
+                </p:column>
+          <p:column headerText="EDITAR">
+         <p:commandButton value="EDITAR" action="#{usuarioBean.editaUsuario()}"
+                          icon="fa fa-fw fa-edit" ajax="false" >
+                    <f:setPropertyActionListener target="#{usuarioBean.usuario}" value="#{item}"/>
+          </p:commandButton>
+            </p:column>
+               </p:dataTable>
+              </h:form>
+        </f:view>
+        
+        
+        </ui:define>
+   </ui:composition>
+   </html>
