@@ -149,6 +149,8 @@ private boolean mostra = false;
              boolean permitido = false;
              if (this.usuario != null & this.usuario.getPapel().isPrivAdmin()){
              permitido = true;
+             }else {
+           	 apresentaMensagemErro("Voce não possui privilégio de Administrador");
              }
             
              return permitido;
@@ -224,9 +226,9 @@ private boolean mostra = false;
          
           public String logout(){
             
-         
              this.permiteAcesso = false;
              String redireciona = "/security/login?faces-redirect=true";
+             this.usuario = null;
              this.usuario = new Usuario();
              return redireciona;
          }
@@ -235,10 +237,11 @@ private boolean mostra = false;
           public boolean verificaPrivilegio(){
               
            boolean possuiPrivilegio = false;
-         
                      
               if(this.usuario.getPapel().isPrivAdmin()){
                   possuiPrivilegio = true;
+              }else {
+            	  apresentaMensagemErro("Voce não possui privilégio de Administrador");
               }
               return possuiPrivilegio;
          }
@@ -246,13 +249,15 @@ private boolean mostra = false;
           
             public boolean verificaUsuarioLogado(){
 
-          /*    
-//                NÃƒO HÃ� NECESSIDADE DE PEGAR PELO CONTEXTO, POIS TENHO O LOGIN E A SENHA 
-  //              EM THIS.USUARIO.GETLOGIN()
-                
-                FacesContext fc = FacesContext.getCurrentInstance();
-              Map<String, String> params = fc.getExternalContext().getRequestParameterMap();
-              String loginUsuarioLogado = params.get("j_idt6:login");
+          /*  
+           *   
+           NÃO HÁ NECESSIDADE DE PEGAR O USUÁRIO PELO CONTEXTO, 
+           POIS TENHO O LOGIN E A SENHA EM THIS.USUARIO.GETLOGIN()
+           O atributo usuário é estático e, portanto, tem escopo de aplicação
+          FacesContext fc = FacesContext.getCurrentInstance();
+          Map<String, String> params = fc.getExternalContext().getRequestParameterMap();
+         String loginUsuarioLogado = params.get("j_idt6:login");
+
              */
           
              if (this.usuario.getNome() != null){
@@ -263,8 +268,8 @@ private boolean mostra = false;
             return isMostra();
             }
             
-               public void solicitarNovaSenha() throws Exception {
-       
+            
+            public void solicitarNovaSenha() throws Exception {
              
              //UsuarioJpaController usuarioDAO = new UsuarioJpaController();
              Usuario usuarioSemSenha = usuarioDAO.findByLogin(this.usuario.getLogin());
@@ -272,7 +277,7 @@ private boolean mostra = false;
                  
              criptoSenha.gerarNovaSenha(usuarioSemSenha);
              
-            FacesMessage mensagem = new FacesMessage("                                            "
+            String mensagem = "                                            "
                     + "                                                         "
                     + "                                       ************************"
                     + "************************************************************"
@@ -286,8 +291,9 @@ private boolean mostra = false;
                             + "                                                          "
                             + "***********************************************************"
                             + "***********************************************************"
-                            + "***********************************************************");    
-            FacesContext.getCurrentInstance().addMessage("novaSenha", mensagem);
+                            + "***********************************************************";    
+            
+            apresentaMensagemErro("novaSenha", mensagem);
 
              }
             
