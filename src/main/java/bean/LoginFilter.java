@@ -9,6 +9,7 @@ package bean;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.application.FacesMessage;
@@ -25,10 +26,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.sun.faces.el.ELUtils.Scope;
+
 import DAO.UsuarioJpaController;
 import Default.CriptografiaSenha;
 import factory.JSFFactory;
 import helper.MessageHelper;
+import jsfAnnotation.ScopeMap;
+import jsfAnnotation.SessionMap;
 import modelo.Usuario;
 
 
@@ -49,8 +54,12 @@ private static final long serialVersionUID = -8369585486567279810L;
 @Inject
 private MessageHelper helper;
 
+//@Inject
+//private JSFFactory jsfFactory;
+
 @Inject
-private JSFFactory jsfFactory;
+@ScopeMap(Scope.SESSION)
+private JSFFactory sessionMap;
 
 private  boolean permiteAcesso = false;
 private boolean mostra = false;
@@ -119,8 +128,9 @@ private boolean mostra = false;
               
               //estou colocando o usuarioLogado no mapa da sessão 
               //e não mais preciso pegar o ExternalContext do FacesContext 
-              this.jsfFactory.sessionMap().put("usuarioLogado", this.usuario);
-
+              //this.jsfFactory.sessionMap().put("usuarioLogado", this.usuario);
+              this.sessionMap.put("usuarioLogado", this.usuario);
+             
               this.permiteAcesso = true;
                 redireciona = "/restricted/gastos?faces-redirect=true";
             }
@@ -236,7 +246,8 @@ private boolean mostra = false;
              
              //estou removendo o usuarioLogado do mapa da sessão
              //não preciso mais do atributo context do Facescontext
-             this.jsfFactory.sessionMap().remove("usuarioLogado", this.usuario);
+             //this.jsfFactory.sessionMap().remove("usuarioLogado", this.usuario);
+             this.sessionMap.remove("usuarioLogado", this.usuario);   
              
              this.usuario = new Usuario();
              return redireciona;
