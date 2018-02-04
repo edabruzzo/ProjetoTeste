@@ -114,9 +114,13 @@ private boolean mostra = false;
             	ESTOU OPTANDO POR RECEBER O USUÁRIO LOGADO NÃO PELO MAP DO CONTEXTO
             	DA SEÇÃO, MAS ATRAVÉS DE UM ATRIBUTO PRIVADO ESTÁTICO, QUE DEVE DURAR 
             	DURANTE TODA A EXECUÇÃO DA SESSÃO.*/
-            	
+            
             	
               this.usuario = novoUsuario;
+              
+              //estou colocando o usuarioLogado no mapa da sessão
+              this.context.getExternalContext().getSessionMap().put("usuarioLogado", this.usuario);
+
               this.permiteAcesso = true;
                 redireciona = "/restricted/gastos?faces-redirect=true";
             }
@@ -229,6 +233,10 @@ private boolean mostra = false;
              this.permiteAcesso = false;
              String redireciona = "/security/login?faces-redirect=true";
              this.usuario = null;
+             
+             //estou removendo o usuarioLogado do mapa da sessão
+             this.context.getExternalContext().getSessionMap().remove("usuarioLogado");
+
              this.usuario = new Usuario();
              return redireciona;
          }
