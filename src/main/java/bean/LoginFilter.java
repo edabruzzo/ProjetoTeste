@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
 
 import DAO.UsuarioJpaController;
 import Default.CriptografiaSenha;
+import factory.JSFFactory;
 import helper.MessageHelper;
 import modelo.Usuario;
 
@@ -49,9 +50,7 @@ private static final long serialVersionUID = -8369585486567279810L;
 private MessageHelper helper;
 
 @Inject
-private FacesContext context;
-
-
+private JSFFactory jsfFactory;
 
 private  boolean permiteAcesso = false;
 private boolean mostra = false;
@@ -118,8 +117,9 @@ private boolean mostra = false;
             	
               this.usuario = novoUsuario;
               
-              //estou colocando o usuarioLogado no mapa da sessão
-              this.context.getExternalContext().getSessionMap().put("usuarioLogado", this.usuario);
+              //estou colocando o usuarioLogado no mapa da sessão 
+              //e não mais preciso pegar o ExternalContext do FacesContext 
+              this.jsfFactory.sessionMap().put("usuarioLogado", this.usuario);
 
               this.permiteAcesso = true;
                 redireciona = "/restricted/gastos?faces-redirect=true";
@@ -235,8 +235,9 @@ private boolean mostra = false;
              this.usuario = null;
              
              //estou removendo o usuarioLogado do mapa da sessão
-             this.context.getExternalContext().getSessionMap().remove("usuarioLogado");
-
+             //não preciso mais do atributo context do Facescontext
+             this.jsfFactory.sessionMap().remove("usuarioLogado", this.usuario);
+             
              this.usuario = new Usuario();
              return redireciona;
          }
