@@ -21,6 +21,7 @@ import DAO.exceptions.NonexistentEntityException;
 import TransactionsAnnotations.Transacional;
 import bean.GastoBean;
 import factory.JPAFactory;
+import jpaAnnotations.Query_;
 import modelo.Gasto;
 import modelo.Local;
 import modelo.Usuario;
@@ -48,6 +49,9 @@ public class GastoJpaController implements Serializable {
 	@Inject
     private GastoBean gb;
 	
+	@Inject
+	@Query_("SELECT * FROM tb_gasto ORDER BY ID_GASTO DESC;")
+    private Query listaGastosByConsultaSQL; 	
 	
 	
 	
@@ -214,21 +218,17 @@ public class GastoJpaController implements Serializable {
         
     }
     
-              
+              	
        public List<Gasto> listaGastosByConsultaSQL(){
-        EntityManager em = jpa.getEntityManager();
-           String sqlString = "SELECT * FROM tb_gasto ORDER BY ID_GASTO DESC;";
-          Query q = em.createNativeQuery(sqlString, Gasto.class);
+        
+        
            List<Gasto> listaGasto = new ArrayList();
           try{
          
-          listaGasto = q.getResultList();
+          listaGasto = listaGastosByConsultaSQL.getResultList();
 
           }catch (PersistenceException pe) {
               apresentaMensagem(pe.getMessage());
-         // }catch(NullPointerException npex){
-           //   apresentaMensagem();
-         // }
            
           }
              

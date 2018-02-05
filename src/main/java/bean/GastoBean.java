@@ -89,9 +89,6 @@ public class GastoBean implements Serializable {
 
     public List<Gasto> getListaGastosTotais() {
         
-      // Esta dependencia passou a ser injetada pelo CDI, através do construtor
-      //  GastoJpaController gastoDAO = new GastoJpaController();
-     //LoginFilter lf = new LoginFilter();
           
           if (lf.verificaPrivilegio()) {
 
@@ -193,9 +190,7 @@ public class GastoBean implements Serializable {
     public void mostraMensagemErro(String message){
         
     this.setHouveErro(true);
-    FacesMessage fm = new FacesMessage( message);
-    FacesContext.getCurrentInstance().addMessage("tabelaGastos", fm);
-    
+    lf.apresentaMensagemErro(message);
     
     }
     
@@ -205,8 +200,6 @@ public class GastoBean implements Serializable {
     
     public void adicionarGasto() throws NonexistentEntityException, Exception{
     
-        // Esta dependencia passou a ser injetada pelo CDI, através do construtor
-     	//  GastoJpaController gastoDAO = new GastoJpaController();
         boolean gravado = false;
         
         if (gastoDAO.findGasto(gasto.getId_gasto()) == null) {
@@ -216,10 +209,10 @@ public class GastoBean implements Serializable {
           	String mensagem1 = null;
                mensagem1 = "HOUVE UM PROBLEMA E O GASTO NÃO FOI GRAVADO POIS "
                        + "O LOCAL E/OU USUÁRIO ESTÃO NULOS";
-              FacesMessage fm = new FacesMessage(mensagem1);
-               FacesContext.getCurrentInstance().addMessage("gravaGasto", fm);
+
+               lf.apresentaMensagemErro("gravaGasto", mensagem1);
           
-        	gravado =  gastoDAO.create(this.gasto);
+               gravado =  gastoDAO.create(this.gasto);
       	  
         }else if(gastoDAO.findGasto(this.gasto.getId_gasto()) != null) {
         	
@@ -233,13 +226,11 @@ public class GastoBean implements Serializable {
                
         if  (!gravado){
             mensagem = "HOUVE UM PROBLEMA E O GASTO NÃO FOI GRAVADO";
-            FacesMessage fm = new FacesMessage(mensagem);
-             FacesContext.getCurrentInstance().addMessage("gravaGasto", fm);
+            lf.apresentaMensagemErro("gravaGasto", mensagem);
         }else {
             
             mensagem = "O GASTO FOI GRAVADO COM SUCESSO";
-            FacesMessage fm = new FacesMessage(mensagem);
-            FacesContext.getCurrentInstance().addMessage("gravaGasto", fm);
+            lf.apresentaMensagemErro(mensagem);
               }
         this.listaGastosTotais = getListaGastosTotais();            
         this.gasto = new Gasto();
@@ -249,8 +240,6 @@ public class GastoBean implements Serializable {
     
         public void gravaLocal(){
         
-       	//Injetando esta dependencia pelo CDI através de atributo de classe anotado com @Inject
-       //LocalJpaController localDAO = new LocalJpaController();
         this.local = localDAO.findLocal(localID);
         this.gasto.setLocal(local);
                     
@@ -267,7 +256,6 @@ public class GastoBean implements Serializable {
         
         public List<Projeto> selecionaProjetos(){
             
-            //ProjetoJpaController projetoDAO = new ProjetoJpaController();
             List<Projeto> listaProjetos = projetoDAO.findProjetoEntities();
             return listaProjetos;
         }
@@ -275,7 +263,7 @@ public class GastoBean implements Serializable {
         
            public List<Usuario> selecionaUsuarios(){
             
-        	//UsuarioJpaController usuarioDAO = new UsuarioJpaController();
+
            
             List<Usuario> listaUsuarios =  usuarioDAO.findUsuarioEntities();
             
@@ -284,7 +272,6 @@ public class GastoBean implements Serializable {
            
              public void gravaUsuario(){
             
-            //UsuarioJpaController usuarioDAO = new UsuarioJpaController();
             this.usuario = usuarioDAO.findUsuario(getIDUsuarioPesquisado());
             gasto.setUsuario(usuario);
         }
@@ -294,15 +281,14 @@ public class GastoBean implements Serializable {
              
              public void editaGasto() throws Exception{
                  
-            	 //	 LoginFilter lf = new LoginFilter();
                  boolean possuiPrivilegio = lf.verificaPrivilegio();
                  
                  if(possuiPrivilegio){
  
                  }else {
             
-            FacesMessage fm = new FacesMessage("DESCULPE, MAS VOCÊ NÃO TEM PRIVILÉGIO DE ADMINISTRADOR PARA EXECUTAR ESTA AÇÃO!");
-            FacesContext.getCurrentInstance().addMessage("editaGasto", fm);
+            String mensagem = "DESCULPE, MAS VOCÊ NÃO TEM PRVILÉGIO DE ADMINISTRADOR PARA EXECUTAR ESTA AÇÃO!";
+            lf.apresentaMensagemErro("editaGasto", mensagem);
                }
                  
              }
@@ -339,7 +325,6 @@ public class GastoBean implements Serializable {
                 this.gastoEditado = gasto; 
                  */
                 
-            	//LoginFilter lf = new LoginFilter();
                  boolean possuiPrivilegio = lf.verificaPrivilegio();
                  
                  if(possuiPrivilegio & this.getGastoEditado() != null){
@@ -354,13 +339,10 @@ public class GastoBean implements Serializable {
         
              public void deletaGasto() throws NonexistentEntityException{
                  
-            	 //LoginFilter lf = new LoginFilter();
                  boolean possuiPrivilegio = lf.verificaPrivilegio();
                  
                  if(possuiPrivilegio & this.gasto != null){
                  
-                // Esta dependencia passou a ser injetada pelo CDI, através do construtor
-              	//  GastoJpaController gastoDAO = new GastoJpaController();
                  gastoDAO.destroy(this.gasto.getId_gasto());
                  this.gastosTotais = 0;
     
@@ -369,9 +351,6 @@ public class GastoBean implements Serializable {
              }
         
         
-             
-             
-             
              
              
              
@@ -402,7 +381,7 @@ public class GastoBean implements Serializable {
         
     public boolean valorEhMenor(Object valorColuna, Object filtroDigitado, Locale locale) { //java.util.Locale
    
-    //tirando espaços do filtro
+         //tirando espaços do filtro
         String textoDigitado = (filtroDigitado == null) ? null : filtroDigitado.toString().trim();
 
         System.out.println("Filtrando pelo " + textoDigitado + ", Valor do elemento: " + valorColuna);
