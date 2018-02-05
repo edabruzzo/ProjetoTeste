@@ -71,16 +71,11 @@ public class CriptografiaSenha implements Serializable{
 				lf.apresentaMensagemErro(e.getMessage());
 			}
                
-               enviarNovaSenhaEmailUsuario(novaSenha);
+               this.criptografaSenha.enviarNovaSenhaEmailUsuario(usuario.getEmail(), novaSenha);
          }
              
              
-           public void enviarNovaSenhaEmailUsuario(String novaSenha){
-               
-               //IMPLANTAR ENVIO DE E-MAIL
-               System.out.println("A NOVA SENHA É : "+novaSenha);
-               
-           }
+         
             
              
     }
