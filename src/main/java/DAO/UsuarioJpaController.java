@@ -18,13 +18,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import DAO.exceptions.NonexistentEntityException;
-import Default.CriptografiaSenha;
 import TransactionsAnnotations.Transacional;
 import bean.LoginFilter;
 import factory.JPAFactory;
 import modelo.Gasto;
 import modelo.Papel;
 import modelo.Usuario;
+import util.CriptografaSenha;
 
 /**
  *
@@ -47,7 +47,7 @@ private Papel papel2 = new Papel();
 private Usuario usuario = new Usuario();
 
 @Inject
-private CriptografiaSenha criptografar;
+private CriptografaSenha criptografar;
 
 @Inject
 private LoginFilter lf;

@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import modelo.Papel;
 import modelo.Usuario;
+import util.CriptografaSenha;
 
 /**
  *
@@ -52,7 +53,7 @@ public class UsuarioBean implements Serializable{
     private UsuarioJpaController usuarioDAO;
 
     @Inject
-    private CriptografiaSenha criptoSenha;
+    private CriptografaSenha criptoSenha;
     
     private boolean canEdit = false;
 

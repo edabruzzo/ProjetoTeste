@@ -29,6 +29,7 @@ import DAO.UsuarioJpaController;
 import Default.CriptografiaSenha;
 import helper.MessageHelper;
 import modelo.Usuario;
+import util.CriptografaSenha;
 
 
 
@@ -66,7 +67,11 @@ private boolean mostra = false;
        private Usuario novoUsuario = new Usuario();
        
        @Inject
-       private  CriptografiaSenha criptoSenha;         
+       private  CriptografaSenha criptoSenha;         
+       
+       @Inject
+       private CriptografiaSenha criptografiaSenha;
+
          
     public boolean isPermiteAcesso() {
         return permiteAcesso;
@@ -269,14 +274,18 @@ private boolean mostra = false;
             }
             
             
-            public void solicitarNovaSenha() throws Exception {
+            public void solicitarNovaSenha() {
              
              //UsuarioJpaController usuarioDAO = new UsuarioJpaController();
              Usuario usuarioSemSenha = usuarioDAO.findByLogin(this.usuario.getLogin());
              if(usuarioSemSenha != null){
                  
-             criptoSenha.gerarNovaSenha(usuarioSemSenha);
-             
+             String novaSenha;
+			try {
+				novaSenha = criptoSenha.gerarNovaSenha();
+			
+             criptoSenha.enviarNovaSenhaEmailUsuario(usuarioSemSenha.getEmail(), novaSenha);
+           
             String mensagem = "                                            "
                     + "                                                         "
                     + "                                       ************************"
@@ -294,10 +303,22 @@ private boolean mostra = false;
                             + "***********************************************************";    
             
             apresentaMensagemErro("novaSenha", mensagem);
-
-             }
             
+            String novaSenhaCriptografada =  this.criptoSenha.convertStringToMd5(novaSenha);
              
+             this.criptografiaSenha.gravarNovaSenhaUsuario(usuarioSemSenha, novaSenhaCriptografada);
+             
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				apresentaMensagemErro(e.getMessage());				
+				e.printStackTrace();
+			}
+             
+             
+            }
+             
+             
+              
          }
       
     
