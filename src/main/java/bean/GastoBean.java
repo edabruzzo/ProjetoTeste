@@ -42,7 +42,7 @@ public class GastoBean implements Serializable {
 	private Gasto gasto = new Gasto();
 	
 	@Inject
-	private LoginFilter lf;
+	private LoginBean lf;
 
 	private Gasto gastoEditado = new Gasto();
 

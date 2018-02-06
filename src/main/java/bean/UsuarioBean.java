@@ -44,7 +44,7 @@ public class UsuarioBean implements Serializable{
     
     private Papel papel = new Papel();
 
-    private LoginFilter lf = new LoginFilter();
+    private LoginBean lf = new LoginBean();
 
     @Inject
     private PapelJpaController papelDAO;

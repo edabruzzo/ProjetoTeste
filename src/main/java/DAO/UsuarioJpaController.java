@@ -19,7 +19,7 @@ import javax.persistence.criteria.Root;
 
 import DAO.exceptions.NonexistentEntityException;
 import TransactionsAnnotations.Transacional;
-import bean.LoginFilter;
+import bean.LoginBean;
 import factory.JPAFactory;
 import modelo.Gasto;
 import modelo.Papel;
@@ -50,7 +50,7 @@ private Usuario usuario = new Usuario();
 private CriptografaSenha criptografar;
 
 @Inject
-private LoginFilter lf;
+private LoginBean lf;
 
 
 @Transacional

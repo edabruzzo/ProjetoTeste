@@ -7,7 +7,7 @@ package Default;
 
 import DAO.UsuarioJpaController;
 import DAO.exceptions.NonexistentEntityException;
-import bean.LoginFilter;
+import bean.LoginBean;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -38,7 +38,7 @@ public class CriptografiaSenha implements Serializable{
 	private CriptografaSenha criptografaSenha;
 	
 	@Inject
-	private LoginFilter lf;
+	private LoginBean lf;
              
             
             

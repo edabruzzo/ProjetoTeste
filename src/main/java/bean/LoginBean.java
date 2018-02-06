@@ -7,22 +7,12 @@ package bean;
 
 
 
-import java.io.IOException;
 import java.io.Serializable;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import DAO.UsuarioJpaController;
 import Default.CriptografiaSenha;
@@ -38,7 +28,7 @@ import util.CriptografaSenha;
  */
 @Named
 @ApplicationScoped
-public class LoginFilter implements Filter, Serializable{
+public class LoginBean implements Serializable{
     
 
 private static final long serialVersionUID = -8369585486567279810L;
@@ -322,48 +312,6 @@ private boolean mostra = false;
       
     
     
-           @Override
-           public void destroy() {
-                     // TODO Auto-generated method stub
-   
-           }
-           
-           
-           
-           /*
-           
-           https://stackoverflow.com/questions/1026846/how-to-redirect-to-login-page-when-session-is-expired-in-java-web-application
-           PARA MELHORAR O PROCESSO DE LOGIN
-           
-           
-           */
-           
-           
-   
-           @Override
-           public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-               
-               HttpSession sess = ((HttpServletRequest) request).getSession(false);
-               
-              if(sess != null)  { 
-                     if (permiteAcesso == false) {
-                    
-                    String contextPath = ((HttpServletRequest) request).getContextPath();
-                              
-                    ((HttpServletResponse) response).sendRedirect(contextPath + "/security/login.xhtml?faces-redirect=true");
-                     }
-                     
-                    else {
-                              chain.doFilter(request, response);
-                     }
-                }
-           }
-   
-           @Override
-           public void init(FilterConfig arg0) throws ServletException {
-                     // TODO Auto-generated method stub
-   
-           }
 
 		public boolean isMostra() {
 			
@@ -381,7 +329,7 @@ private boolean mostra = false;
 			
 			try {
 				
-				if (LoginFilter.usuario.getNome() != null){
+				if (LoginBean.usuario.getNome() != null){
 		             this.setMostra(true);
 		       }			
 				
