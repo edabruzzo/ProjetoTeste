@@ -12,8 +12,6 @@ import java.io.Serializable;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
-import com.sun.faces.context.SessionMap;
-
 import DAO.UsuarioJpaController;
 import Default.CriptografiaSenha;
 import factory.JSFFactory;
@@ -30,7 +28,6 @@ import util.CriptografaSenha;
  * @author Emm
  */
 @ApplicationModel
-
 public class LoginBean implements Serializable{
     
 

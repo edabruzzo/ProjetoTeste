@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Model;
 import javax.inject.Inject;
 
 import org.primefaces.model.chart.Axis;
@@ -18,11 +19,10 @@ import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 
 import DAO.GastoJpaController;
-import jsfAnnotation.RequestModel;
 import modelo.Gasto;
 
 
-@RequestModel
+@Model
 public class ChartView implements Serializable {
  
     /**
