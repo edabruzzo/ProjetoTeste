@@ -9,25 +9,22 @@ package bean;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import DAO.UsuarioJpaController;
 import Default.CriptografiaSenha;
 import helper.MessageHelper;
+import jsfAnnotation.ApplicationModel;
 import modelo.Usuario;
 import util.CriptografaSenha;
-
 
 
 /**
  *
  * @author Emm
  */
-@Named
-@ApplicationScoped
+@ApplicationModel
 public class LoginBean implements Serializable{
     
 

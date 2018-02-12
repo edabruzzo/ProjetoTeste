@@ -3,28 +3,26 @@ package bean;
 
 
  
-import DAO.GastoJpaController;
-import modelo.Gasto;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
-import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.DateAxis;
+import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import DAO.GastoJpaController;
+import jsfAnnotation.RequestModel;
+import modelo.Gasto;
 
 
-@Named
-@RequestScoped
+@RequestModel
 public class ChartView implements Serializable {
  
     /**

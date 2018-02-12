@@ -5,24 +5,21 @@
  */
 package bean;
 
-import DAO.ProjetoJpaController;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 
+import javax.inject.Inject;
+
+import DAO.ProjetoJpaController;
+import jsfAnnotation.SessionModel;
 import modelo.Projeto;
 
 /**
  *
  * @author Emm
  */
-@Named
-@SessionScoped
+@SessionModel
 public class ProjetoBean implements Serializable{
 
     /**

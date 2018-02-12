@@ -5,23 +5,18 @@
  */
 package bean;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Locale;
+
+import javax.inject.Inject;
+
 import DAO.GastoJpaController;
 import DAO.LocalJpaController;
 import DAO.ProjetoJpaController;
 import DAO.UsuarioJpaController;
 import DAO.exceptions.NonexistentEntityException;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
-
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.faces.context.FacesContext;
-
+import jsfAnnotation.SessionModel;
 import modelo.Gasto;
 import modelo.Local;
 import modelo.Projeto;
@@ -32,8 +27,7 @@ import modelo.Usuario;
  *
  * @author Emm
  */
-@Named
-@SessionScoped
+@SessionModel
 public class GastoBean implements Serializable {
     
 	private static final long serialVersionUID = -6640908587320073526L;

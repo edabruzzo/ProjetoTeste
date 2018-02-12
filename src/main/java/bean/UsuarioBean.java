@@ -5,18 +5,15 @@
  */
 package bean;
 
-import DAO.PapelJpaController;
-import DAO.UsuarioJpaController;
-import DAO.exceptions.NonexistentEntityException;
-import Default.CriptografiaSenha;
-
 import java.io.Serializable;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
+
+import DAO.PapelJpaController;
+import DAO.UsuarioJpaController;
+import DAO.exceptions.NonexistentEntityException;
+import jsfAnnotation.SessionModel;
 import modelo.Papel;
 import modelo.Usuario;
 import util.CriptografaSenha;
@@ -25,8 +22,7 @@ import util.CriptografaSenha;
  *
  * @author Emm
  */
-@Named
-@SessionScoped
+@SessionModel
 public class UsuarioBean implements Serializable{
 
     
