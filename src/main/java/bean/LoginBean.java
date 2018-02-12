@@ -9,6 +9,7 @@ package bean;
 
 import java.io.Serializable;
 
+import javax.enterprise.inject.Model;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
@@ -16,7 +17,6 @@ import DAO.UsuarioJpaController;
 import Default.CriptografiaSenha;
 import factory.JSFFactory;
 import helper.MessageHelper;
-import jsfAnnotation.ApplicationModel;
 import jsfAnnotation.ScopeMap;
 import jsfAnnotation.ScopeMap.Scope;
 import modelo.Usuario;
@@ -27,7 +27,7 @@ import util.CriptografaSenha;
  *
  * @author Emm
  */
-@ApplicationModel
+@Model
 public class LoginBean implements Serializable{
     
 
