@@ -12,10 +12,15 @@ import java.io.Serializable;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
+import com.sun.faces.context.SessionMap;
+
 import DAO.UsuarioJpaController;
 import Default.CriptografiaSenha;
+import factory.JSFFactory;
 import helper.MessageHelper;
 import jsfAnnotation.ApplicationModel;
+import jsfAnnotation.ScopeMap;
+import jsfAnnotation.ScopeMap.Scope;
 import modelo.Usuario;
 import util.CriptografaSenha;
 
@@ -25,11 +30,15 @@ import util.CriptografaSenha;
  * @author Emm
  */
 @ApplicationModel
+
 public class LoginBean implements Serializable{
     
 
 private static final long serialVersionUID = -8369585486567279810L;
 
+@Inject
+@ScopeMap(Scope.SESSION)
+private JSFFactory sessionMap;
 
 
 @Inject
@@ -109,7 +118,10 @@ private boolean mostra = false;
             	
               this.usuario = novoUsuario;
               this.permiteAcesso = true;
-                redireciona = "/restricted/gastos?faces-redirect=true";
+              this.sessionMap.sessionMap().put("usuarioLogado", this.usuario);
+              
+              redireciona = "/restricted/gastos?faces-redirect=true";
+            
             }
             }catch(NullPointerException npex) {
             	
@@ -219,8 +231,12 @@ private boolean mostra = false;
             
              this.permiteAcesso = false;
              String redireciona = "/security/login?faces-redirect=true";
+             this.sessionMap.sessionMap().remove("usuarioLogado", this.usuario); 
              this.usuario = null;
              this.usuario = new Usuario();
+
+             
+             
              return redireciona;
          }
           
