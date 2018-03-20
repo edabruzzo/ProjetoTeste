@@ -1,5 +1,9 @@
 # ControleOrcamentoFamiliar
 
+**********************************************************************
+THIS PROJECT IS JUT A PERSONAL INITIATIVE WITH DIDATIC PURPOSES ******
+**********************************************************************
+
 
 Problemas com dependencia circular
 https://stackoverflow.com/questions/38827136/weld-00143-pseudo-scoped-bean-has-circular-dependencies
