@@ -1,7 +1,7 @@
 # ControleOrcamentoFamiliar
 
 **********************************************************************
-THIS PROJECT IS JUT A PERSONAL INITIATIVE WITH DIDATIC PURPOSES ******
+THIS PROJECT IS JUST A PERSONAL INITIATIVE WITH DIDATIC PURPOSES ******
 **********************************************************************
 
 
