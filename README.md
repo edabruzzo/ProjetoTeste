@@ -1,7 +1,12 @@
 # ControleOrcamentoFamiliar
 
+*********************************************************************************************
+ATENÇÃO !!!!
+Este projeto foi desenvolvido com base nos conhecimentos obtidos junto a ALURA, no curso de JSF e CDI. 
+*********************************************************************************************
+
 **********************************************************************
-THIS PROJECT IS JUST A PERSONAL INITIATIVE WITH DIDATIC PURPOSES ******
+THIS PROJECT IS JUST A PERSONAL INITIATIVE WITH DIDATIC PURPOSES 
 **********************************************************************
 
 
